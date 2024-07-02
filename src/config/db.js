@@ -1,21 +1,17 @@
-import { createConnection } from "mysql2";
+import mysql from "mysql2/promise";
 import { config } from "dotenv";
 
 config();
 
-const db = createConnection({
+const pool = mysql.createPool({
   host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
+  waitForConnections: true,
+  connectionLimit: 100,
+  queueLimit: 0,
 });
 
-db.connect((err) => {
-  if (err) {
-    console.error("Error conectando a la base de datos: " + err.stack);
-    return;
-  }
-  console.log("Conectado a la base de datos como ID " + db.threadId);
-});
-
-export default db;
+export default pool;
