@@ -11,13 +11,13 @@ export const uploadFile = async (req, res) => {
   }
 
   try {
-    const { autorIniciador, caratula, numeroFolios, tema } = req.body;
-    const nombreArchivo = req.file.filename;
+    const { autorIniciador, caratula, numeroFolios, tema, dia, mes, anio } = req.body;
+const nombreArchivo = req.file.filename;
 
-    const [result] = await pool.query(
-      "INSERT INTO archivos (autor_iniciador, caratula, numero_folios, tema, nombre_archivo) VALUES (?, ?, ?, ?, ?)",
-      [autorIniciador, caratula, numeroFolios, tema, nombreArchivo]
-    );
+const [result] = await pool.query(
+  "INSERT INTO archivos (autor_iniciador, caratula, numero_folios, tema, nombre_archivo, dia, mes, anio) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+  [autorIniciador, caratula, numeroFolios, tema, nombreArchivo, dia, mes, anio]
+);
 
     res.json({
       message: "Archivo subido y guardado correctamente",
@@ -32,7 +32,11 @@ export const uploadFile = async (req, res) => {
 export const getFiles = async (req, res) => {
   try {
     const [rows] = await pool.query("SELECT * FROM archivos");
-    res.json(rows);
+    const filesWithUrl = rows.map(file => ({
+      ...file,
+      url: getFileUrl(file.nombre_archivo)
+    }));
+    res.json(filesWithUrl);
   } catch (error) {
     console.error("Error al obtener archivos:", error);
     res.status(500).send("Error al obtener archivos de la base de datos");
@@ -71,9 +75,22 @@ export const searchFilesByAuthor = async (req, res) => {
 };
 
 export const searchFilesByDate = async (req, res) => {
-  const { startDate, endDate } = req.query;
+  const { startYear, endYear, startMonth, endMonth, startDay, endDay } = req.query;
   try {
-    const [rows] = await pool.query("SELECT * FROM archivos WHERE fecha_creacion BETWEEN ? AND ?", [startDate, endDate]);
+    let query = "SELECT * FROM archivos WHERE anio BETWEEN ? AND ?";
+    const params = [startYear, endYear];
+
+    if (startMonth && endMonth) {
+      query += " AND mes BETWEEN ? AND ?";
+      params.push(startMonth, endMonth);
+    }
+
+    if (startDay && endDay) {
+      query += " AND dia BETWEEN ? AND ?";
+      params.push(startDay, endDay);
+    }
+
+    const [rows] = await pool.query(query, params);
     const filesWithUrl = rows.map(file => ({
       ...file,
       url: getFileUrl(file.nombre_archivo)

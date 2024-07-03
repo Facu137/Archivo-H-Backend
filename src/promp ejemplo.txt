@@ -1,0 +1,177 @@
+Estoy desarrollando con un equipo este proyecto:
+
+Descripción del Proyecto:
+
+Desarrollaremos una aplicación web SPA (Single Page Application) para un museo de archivos históricos utilizando Express.js para el backend y React+Vite para el frontend. La base de datos se gestionará con MySQL. El objetivo es permitir a los visitantes consultar y visualizar archivos históricos, mientras que los empleados y administradores podrán gestionar y cargar archivos en el sistema.
+
+Requisitos Funcionales:
+
+Roles de Usuario:
+
+Visitante: Puede buscar y ver archivos sin necesidad de iniciar sesión o registrarse.
+Usuario Registrado: Puede buscar y ver archivos, guardar archivos en una lista de favoritos y ver el historial de archivos visitados. Requiere registro e inicio de sesión.
+Empleado: Puede buscar y ver archivos, subir imágenes y PDFs a través de formularios (cada formulario puede contener múltiples imágenes o PDFs), gestionar sus favoritos e historial de archivos subidos y modificados. Requiere registro e inicio de sesión.
+Administrador: Tiene todos los permisos de los empleados, además de gestionar los permisos de los empleados (como agregar, modificar, descargar, ver archivos ocultos o eliminar archivos). También puede restablecer la base de datos a un punto anterior y editar la portada, sección institucional y la sección “acerca de…” del sitio. Requiere registro e inicio de sesión.
+Registro y Autenticación:
+
+El registro requiere correo electrónico, contraseña, nombre y apellido.
+Validación de cuenta por correo electrónico.
+Inicio de sesión para usuarios registrados, empleados y administradores.
+Gestión de Archivos:
+
+Formulario de carga de archivos para empleados y administradores, permitiendo la subida de múltiples imágenes y PDFs.
+Baja lógica al eliminar archivos (se eliminarán de la base de datos después de un período).
+Historial de archivos subidos y modificados por empleados y administradores.
+Visor de imágenes y PDFs integrado, sin permiso de descarga para visitantes y usuarios registrados. Solo empleados con permisos y administradores pueden descargar.
+Funcionalidades Adicionales:
+
+Contador de visitas de los archivos, que solo cuenta las visitas de visitantes y usuarios, evitando duplicados en el mismo día.
+Botón para compartir enlaces en redes sociales.
+Requisitos No Funcionales:
+
+Seguridad y Privacidad:
+
+Implementación de medidas para restringir el acceso no autorizado a las secciones de empleados y administradores mediante cuentas de usuario y roles.
+Manejo de Gran Volumen de Datos:
+
+El sistema debe soportar un gran volumen de documentos (aproximadamente 360,000 imágenes y PDFs).
+Rendimiento:
+
+El rendimiento debe ser adecuado para permitir una búsqueda y visualización eficiente de documentos.
+Historial, Auditoría y Respaldo:
+
+Historial de creación y última modificación de archivos por empleados y administradores.
+No se requiere historial de movimientos de visitantes o usuarios registrados.
+Implementación Sugerida:
+
+Backend (Express.js):
+
+Configuración de la base de datos MySQL para gestionar los archivos, usuarios y roles.
+Implementación de API RESTful para manejar las operaciones CRUD de los archivos y la gestión de usuarios.
+Validación de datos y seguridad (autenticación y autorización).
+Frontend (React+Vite):
+
+Desarrollo de una interfaz de usuario intuitiva para buscar, visualizar y gestionar archivos.
+Formularios de registro, inicio de sesión y carga de archivos.
+Visor integrado para imágenes y PDFs.
+Gestión de favoritos e historial de archivos visitados.
+Contador de visitas y botón para compartir en redes sociales.
+Seguridad y Rendimiento:
+
+Uso de JWT (JSON Web Tokens) para autenticación y autorización.
+Optimización de consultas a la base de datos y uso de técnicas de paginación para manejar el gran volumen de documentos.
+Implementación de medidas de seguridad como cifrado de contraseñas y validación de entrada de usuario.
+Esta estructura organizada y detallada ayudará a tu equipo a entender claramente los requisitos y las funcionalidades necesarias para desarrollar la aplicación de manera efectiva.
+
+Tengo esta estructura ya desarrollada en node.js con express.js, ya tengo implementado la ruta auth con toda la configuración para el login y registro de usuarios.
+/proyecto
+  /config
+    db.js                # Configuración de la base de datos
+  /controllers
+    authController.js    # Controladores para autenticación
+  /middlewares
+    authMiddleware.js    # Middlewares de autenticación
+  /models
+    User.js              # Modelo de usuario
+  /routes
+    authRoutes.js        # Rutas para autenticación
+  /utils
+  app.js                 # Archivo principal de Express
+  package.json           # Dependencias y scripts
+
+quiero agregar el código de un amigo que desarrollo la carga de un formulario y archivos a la base de datos y guarda el archivo en una ruta del disco rigido:
+
+const express = require('express');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+const mysql = require('mysql2/promise');
+const cors = require('cors');
+
+const app = express();
+const port = 5000;
+
+app.use(cors());
+app.use(express.json());
+
+// Directorio para almacenar archivos subidos
+const uploadsDir = 'E:\\backups';
+
+// Asegurarse de que el directorio uploads existe
+if (!fs.existsSync(uploadsDir)){
+    fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
+// Configuración de la conexión MySQL
+const pool = mysql.createPool({
+  host: 'localhost',
+  port: 3306,
+  user: 'root',
+  password: '12356maxn',
+  database: 'gestionArchivo',
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0
+});
+
+// Configurar multer para almacenar archivos
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, uploadsDir);
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + '-' + file.originalname);
+  }
+});
+const upload = multer({
+  storage: storage,
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype === "image/png" || file.mimetype === "image/jpg" || file.mimetype === "image/jpeg" || file.mimetype === "application/pdf") {
+      cb(null, true);
+    } else {
+      cb(new Error('Solo se permiten archivos .png, .jpg, .jpeg y .pdf'), false);
+    }
+  }
+});
+
+// Ruta para subir archivo
+app.post('/upload', upload.single('archivo'), async (req, res) => {
+  if (!req.file) {
+    return res.status(400).send('No se subió ningún archivo');
+  }
+  
+  try {
+    const { autorIniciador, caratula, numeroFolios, fecha, tema } = req.body;
+    const nombreArchivo = req.file.filename;
+    
+    const [result] = await pool.query(
+      'INSERT INTO archivos (autor_iniciador, caratula, numero_folios, fecha, tema, nombre_archivo) VALUES (?, ?, ?, ?, ?, ?)',
+      [autorIniciador, caratula, numeroFolios, fecha, tema, nombreArchivo]
+    );
+    
+    res.json({ message: 'Archivo subido y guardado correctamente', id: result.insertId });
+  } catch (error) {
+    console.error('Error al guardar en la base de datos:', error);
+    res.status(500).send('Error al guardar el archivo en la base de datos');
+  }
+});
+
+// Ruta para obtener lista de archivos
+app.get('/files', async (req, res) => {
+  try {
+    const [rows] = await pool.query('SELECT * FROM archivos');
+    res.json(rows);
+  } catch (error) {
+    console.error('Error al obtener archivos:', error);
+    res.status(500).send('Error al obtener archivos de la base de datos');
+  }
+});
+
+// Ruta para servir archivos
+app.use('/uploads', express.static(uploadsDir));
+
+app.listen(port, () => {
+  console.log(`Servidor corriendo en http://localhost:${port}`);
+});
+
+me ayudas agregar su codigo al proyecto de node.js
