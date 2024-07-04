@@ -1,20 +1,23 @@
 import db from "../config/db.js";
 
 const User = {
-  create: (user, callback) => {
+  create: async (user) => {
     const query =
       "INSERT INTO usuario (email, password, nombre, apellido, rol) VALUES (?, ?, ?, ?, ?)";
-    // Establecer el rol como 'user' automáticamente
     const rol = "user";
-    db.query(
-      query,
-      [user.email, user.password, user.nombre, user.apellido, rol],
-      callback
-    );
+    const [result] = await db.query(query, [
+      user.email,
+      user.password,
+      user.nombre,
+      user.apellido,
+      rol,
+    ]);
+    return result;
   },
-  findByEmail: (email, callback) => {
+  findByEmail: async (email) => {
     const query = "SELECT * FROM usuario WHERE email = ?";
-    db.query(query, [email], callback);
+    const [results] = await db.query(query, [email]);
+    return results;
   },
 };
 
