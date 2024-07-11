@@ -1,26 +1,30 @@
-import express from "express";
-import cors from "cors";
-import path from "path";
-import { config } from "dotenv";
-import authRoutes from "./routes/authRoutes.js";
-import fileRoutes from "./routes/fileRoutes.js";
+import express from 'express'
+import cors from 'cors'
+import path from 'path'
+import { config } from 'dotenv'
+import authRoutes from './routes/authRoutes.js'
+import fileRoutes from './routes/fileRoutes.js'
 
-const app = express();
-const port = process.env.PORT || 3000;
+const app = express()
+const port = process.env.PORT || 3000
 
 // Cargar variables de entorno y base de datos
-config();
+config()
 
 // Middlewares
-app.use(cors()); // para aceptar peticiones de otros dominios
-app.use(express.json()); // para analizar el body de las peticiones
+app.use(cors()) // para aceptar peticiones de otros dominios
+app.use(express.json()) // para analizar el body de las peticiones
 
 // Rutas
-app.use("/auth", authRoutes); // ruta de autenticación
-app.use("/api", fileRoutes); // ruta para subir archivos
-app.use("/uploads", express.static(path.join(process.cwd(), "uploads"))); // ruta para subir archivos
+app.use('/auth', authRoutes) // ruta de autenticación
+app.use('/api', fileRoutes) // ruta para subir archivos
+app.use('/uploads', express.static(path.join(process.cwd(), 'uploads'))) // ruta para subir archivos
 
 // Iniciar servidor
+app.get('/', (req, res) => {
+  res.send('<Style>body{background-color: #0e0e0e;}</Style> <h1 style="text-align: center ; color: white;">Servidor Archivo Historico Funcionando...</h1>')
+})
+
 app.listen(port, () => {
-  console.log(`Servidor corriendo en http://localhost:${port}`);
-});
+  console.log(`Servidor corriendo en http://localhost:${port}`)
+})
