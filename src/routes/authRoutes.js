@@ -1,15 +1,16 @@
-import { Router } from "express";
-const router = Router();
-import authController from "../controllers/authController.js";
-import verifyToken from "../middlewares/authMiddleware.js";
+import { Router } from 'express'
+import authController from '../controllers/authController.js'
+import verifyToken from '../middlewares/authMiddleware.js'
+const router = Router()
 
 // Routes de auth
-router.post("/register", authController.register);
-router.post("/login", authController.login);
+router.post('/register', authController.register)
+router.post('/login', authController.login)
+// router.post('/logout', verifyToken, authController.logout)
 
 // Routes de profile
-router.get("/profile", verifyToken, (req, res) => {
-  res.status(200).json({ user: req.user });
-});
+router.get('/profile', verifyToken, (req, res) => {
+  res.status(200).json({ user: req.user })
+})
 
-export default router;
+export default router
