@@ -1,14 +1,17 @@
-// Schemas/authSchema.js
+// src/Schemas/authSchema.js
 import { z } from 'zod'
 
-const authSchema = z
-  .object({
-    email: z
-      .string({ required_error: 'El correo electrónico es requerido' })
-      .email({ message: 'Correo electrónico no válido' }),
-    password: z
-      .string({ required_error: 'La contraseña es requerida' })
-      .min(6, { message: 'La contraseña debe tener al menos 6 caracteres' }),
+const baseSchema = z.object({
+  email: z
+    .string({ required_error: 'El correo electrónico es requerido' })
+    .email({ message: 'Correo electrónico no válido' }),
+  password: z
+    .string({ required_error: 'La contraseña es requerida' })
+    .min(6, { message: 'La contraseña debe tener al menos 6 caracteres' })
+})
+
+const registerSchema = baseSchema
+  .extend({
     confirmPassword: z
       .string({ required_error: 'La confirmación de contraseña es requerida' })
       .min(6, {
@@ -28,4 +31,6 @@ const authSchema = z
     path: ['confirmPassword'] // Indica que el error es en la confirmación de contraseña
   })
 
-export default authSchema
+const loginSchema = baseSchema
+
+export { registerSchema, loginSchema }
