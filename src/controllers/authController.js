@@ -1,3 +1,4 @@
+// src\controllers\authController.js
 import register from './authController/register.js'
 import login from './authController/login.js'
 import refreshToken from './authController/refreshToken.js'

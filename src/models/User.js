@@ -1,5 +1,4 @@
 // src/models/User.js
-
 import create from './user/create.js'
 import findByEmail from './user/findByEmail.js'
 import findById from './user/findById.js'

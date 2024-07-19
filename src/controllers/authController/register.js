@@ -1,3 +1,4 @@
+// src\controllers\authController\register.js
 import { hash } from 'bcrypt'
 import User from '../../models/User.js'
 import { registerSchema } from '../../schemas/authSchema.js'

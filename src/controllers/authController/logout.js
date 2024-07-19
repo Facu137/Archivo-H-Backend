@@ -1,3 +1,4 @@
+// src\controllers\authController\logout.js
 import User from '../../models/User.js'
 
 /**

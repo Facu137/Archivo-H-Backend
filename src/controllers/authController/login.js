@@ -1,3 +1,4 @@
+// src\controllers\authController\login.js
 import { compare } from 'bcrypt'
 import User from '../../models/User.js'
 import generateTokens from './generateTokens.js'
