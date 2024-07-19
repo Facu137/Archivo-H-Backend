@@ -1,24 +1,19 @@
-import db from "../config/db.js";
+// src/models/User.js
+
+import create from './user/create.js'
+import findByEmail from './user/findByEmail.js'
+import findById from './user/findById.js'
+import updateRefreshToken from './user/updateRefreshToken.js'
+import findByRefreshToken from './user/findByRefreshToken.js'
+import removeRefreshToken from './user/removeRefreshToken.js'
 
 const User = {
-  create: async (user) => {
-    const query =
-      "INSERT INTO usuario (email, password, nombre, apellido, rol) VALUES (?, ?, ?, ?, ?)";
-    const rol = "user";
-    const [result] = await db.query(query, [
-      user.email,
-      user.password,
-      user.nombre,
-      user.apellido,
-      rol,
-    ]);
-    return result;
-  },
-  findByEmail: async (email) => {
-    const query = "SELECT * FROM usuario WHERE email = ?";
-    const [results] = await db.query(query, [email]);
-    return results;
-  },
-};
+  create,
+  findByEmail,
+  findById,
+  updateRefreshToken,
+  findByRefreshToken,
+  removeRefreshToken
+}
 
-export default User;
+export default User
