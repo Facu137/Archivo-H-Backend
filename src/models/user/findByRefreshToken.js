@@ -1,3 +1,4 @@
+// src/models/user/findByRefreshToken.js
 import db from '../../config/db.js'
 
 const findByRefreshToken = async (refreshToken) => {

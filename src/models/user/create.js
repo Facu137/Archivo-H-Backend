@@ -1,3 +1,4 @@
+// src/models/user/create.js
 import db from '../../config/db.js'
 
 const create = async (user) => {

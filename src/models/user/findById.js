@@ -1,3 +1,4 @@
+// src/models/user/findById.js
 import db from '../../config/db.js'
 
 const findById = async (id) => {

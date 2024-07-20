@@ -1,3 +1,4 @@
+// src\middlewares\authMiddleware\checkPermission.js
 import User from '../../models/User.js'
 
 /**

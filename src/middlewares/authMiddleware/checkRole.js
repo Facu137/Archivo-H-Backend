@@ -1,3 +1,4 @@
+// src\middlewares\authMiddleware\checkRole.js
 /**
  * Función que verifica si el rol del usuario tiene acceso.
  *

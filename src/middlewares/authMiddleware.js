@@ -1,3 +1,4 @@
+// src\middlewares\authMiddleware.js
 import verifyToken from './authMiddleware/verifyToken.js'
 import checkRole from './authMiddleware/checkRole.js'
 import checkPermission from './authMiddleware/checkPermission.js'

@@ -1,3 +1,4 @@
+// src/models/user/findByEmail.js
 import db from '../../config/db.js'
 
 const findByEmail = async (email) => {

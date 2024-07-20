@@ -1,3 +1,4 @@
+// src/routes/authRoutes.js
 import { Router } from 'express'
 import authController from '../controllers/authController.js'
 import { verifyToken, checkRole } from '../middlewares/authMiddleware.js'

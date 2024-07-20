@@ -1,3 +1,4 @@
+// src\controllers\authController\login.js
 import { compare } from 'bcrypt'
 import User from '../../models/User.js'
 import generateTokens from './generateTokens.js'
@@ -55,6 +56,7 @@ const login = async (req, res) => {
 
     if (passwordMatch) {
       const { accessToken, refreshToken } = generateTokens(user)
+      // console.log('RrefreshToken generado:', refreshToken)
 
       await User.updateRefreshToken(user.id, refreshToken)
 
@@ -72,6 +74,11 @@ const login = async (req, res) => {
         .json({ message: 'Correo o contraseña incorrectos' })
     }
   } catch (err) {
+    if (err.issues) {
+      return res
+        .status(400)
+        .json({ errors: err.issues.map((issue) => issue.message) })
+    }
     res.status(500).json({ error: err.message })
   }
 }

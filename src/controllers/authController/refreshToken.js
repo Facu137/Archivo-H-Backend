@@ -1,3 +1,5 @@
+// src/controllers/authController/refreshToken.js
+import jwt from 'jsonwebtoken'
 import User from '../../models/User.js'
 import generateTokens from './generateTokens.js'
 
@@ -37,26 +39,42 @@ const refreshToken = async (req, res) => {
     return res.status(401).json({ message: 'Refresh token no proporcionado' })
   }
 
+  // console.log('Received refreshToken:', refreshToken)
+
   try {
+    // Decodificar el refreshToken para verificar la expiración
+    // const decoded = jwt.decode(refreshToken)
+    // console.log('Decoded refreshToken:', decoded)
+
+    // Verificar y decodificar el refreshToken
+    jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET)
+
+    // Buscar el usuario por el refreshToken
     const user = await User.findByRefreshToken(refreshToken)
+    // console.log('Usuario de la base de datos:', user)
 
     if (!user) {
+      console.log('Usuario no encontrado:', refreshToken)
       return res.status(403).json({ message: 'Refresh token inválido' })
     }
 
+    // Generar nuevos tokens
     const { accessToken, refreshToken: newRefreshToken } = generateTokens(user)
 
+    // Actualizar el refreshToken en la base de datos
     await User.updateRefreshToken(user.id, newRefreshToken)
 
+    // Establecer el nuevo refreshToken en las cookies
     res.cookie('refreshToken', newRefreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
-      maxAge: 7 * 24 * 60 * 60 * 1000
+      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 días
     })
 
     return res.status(200).json({ accessToken })
   } catch (error) {
+    console.error('Error verificando y decodificando el refreshToken:', error)
     return res.status(403).json({ message: 'Refresh token inválido' })
   }
 }

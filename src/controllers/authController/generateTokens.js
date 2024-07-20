@@ -1,3 +1,4 @@
+// src\controllers\authController\generateTokens.js
 import jwt from 'jsonwebtoken'
 
 const { sign } = jwt
