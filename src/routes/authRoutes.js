@@ -25,7 +25,7 @@ router.get(
   (req, res) => {
     res
       .status(200)
-      .json({ message: 'Acceso permitido solo para administradores' })
+      .json({ message: 'Bienvenido al sistema de administración' })
   }
 )
 
@@ -47,7 +47,7 @@ router.get('/archivos-privados', verifyToken, checkRole(['empleado', 'administra
     ]
 
     res.status(200).json({
-      message: 'Acceso permitido a archivos privados',
+      message: 'Acceso permitido a los archivos privados',
       archivos: archivosPrivados,
       permisos: {
         puedeDescargar: user.rol === 'administrador' || user.permiso_descargar,
