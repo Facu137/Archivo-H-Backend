@@ -66,6 +66,8 @@ const register = async (req, res) => {
     await User.create(user)
     res.status(201).json({ message: 'Registrado con éxito con rol: ' + rol })
   } catch (error) {
+    console.error('Error de validación:', error)
+
     if (error.issues) {
       return res
         .status(400)
