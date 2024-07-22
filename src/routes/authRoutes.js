@@ -23,41 +23,50 @@ router.get(
   verifyToken,
   checkRole(['administrador']),
   (req, res) => {
-    res
-      .status(200)
-      .json({ message: 'Bienvenido al sistema de administración' })
+    res.status(200).json({ message: 'Bienvenido al sistema de administración' })
   }
 )
 
 // Ruta protegida para empleados y administradores
-router.get('/archivos-privados', verifyToken, checkRole(['empleado', 'administrador']), async (req, res) => {
-  try {
-    const user = await User.findById(req.user.id)
+router.get(
+  '/archivos-privados',
+  verifyToken,
+  checkRole(['empleado', 'administrador']),
+  async (req, res) => {
+    try {
+      const user = await User.findById(req.user.id)
 
-    if (!user) {
-      return res.status(404).json({ message: 'Usuario no encontrado' })
-    }
-
-    // Aquí iría la lógica para obtener los archivos privados
-    // Por ejemplo:
-    const archivosPrivados = [
-      { id: 1, nombre: 'Archivo confidencial 1' },
-      { id: 2, nombre: 'Archivo confidencial 2' }
-      // ... más archivos
-    ]
-
-    res.status(200).json({
-      message: 'Acceso permitido a los archivos privados',
-      archivos: archivosPrivados,
-      permisos: {
-        puedeDescargar: user.rol === 'administrador' || user.permiso_descargar,
-        puedeEditar: user.rol === 'administrador' || user.permiso_editar,
-        puedeEliminar: user.rol === 'administrador' || user.permiso_eliminar
+      if (!user) {
+        return res.status(404).json({ message: 'Usuario no encontrado' })
       }
-    })
-  } catch (error) {
-    res.status(500).json({ message: 'Error al acceder a los archivos privados', error: error.message })
+
+      // Aquí iría la lógica para obtener los archivos privados
+      // Por ejemplo:
+      const archivosPrivados = [
+        { id: 1, nombre: 'Archivo confidencial 1' },
+        { id: 2, nombre: 'Archivo confidencial 2' }
+        // ... más archivos
+      ]
+
+      res.status(200).json({
+        message: 'Acceso permitido a los archivos privados',
+        archivos: archivosPrivados,
+        permisos: {
+          puedeDescargar:
+            user.rol === 'administrador' || user.permiso_descargar,
+          puedeEditar: user.rol === 'administrador' || user.permiso_editar,
+          puedeEliminar: user.rol === 'administrador' || user.permiso_eliminar
+        }
+      })
+    } catch (error) {
+      res
+        .status(500)
+        .json({
+          message: 'Error al acceder a los archivos privados',
+          error: error.message
+        })
+    }
   }
-})
+)
 
 export default router
