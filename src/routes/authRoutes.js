@@ -59,12 +59,10 @@ router.get(
         }
       })
     } catch (error) {
-      res
-        .status(500)
-        .json({
-          message: 'Error al acceder a los archivos privados',
-          error: error.message
-        })
+      res.status(500).json({
+        message: 'Error al acceder a los archivos privados',
+        error: error.message
+      })
     }
   }
 )
