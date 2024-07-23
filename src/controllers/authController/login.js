@@ -60,10 +60,10 @@ const login = async (req, res) => {
       await User.updateRefreshToken(user.id, refreshToken)
 
       res.cookie('refreshToken', refreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        maxAge: 7 * 24 * 60 * 60 * 1000
+        httpOnly: true, // solo accesible en el servidor
+        secure: process.env.NODE_ENV === 'production', // solo accesible en https
+        sameSite: 'strict', // solo accesible desde el mismo dominio
+        maxAge: 60 * 60 * 1000 // la  cookie expira en 1 hora
       })
 
       // Enviar la información del usuario junto con el token de acceso
