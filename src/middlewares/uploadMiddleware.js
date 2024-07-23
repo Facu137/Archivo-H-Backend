@@ -22,14 +22,18 @@ const upload = multer({
   storage,
   fileFilter: (req, file, cb) => {
     if (
-      file.mimetype === 'image/png' ||
-      file.mimetype === 'image/jpg' ||
-      file.mimetype === 'image/jpeg' ||
-      file.mimetype === 'application/pdf'
+      file.mimetype === "image/png" ||
+      file.mimetype === "image/jpg" ||
+      file.mimetype === "image/jpeg" ||
+      file.mimetype === "image/tiff" ||
+      file.mimetype === "application/pdf"
     ) {
       cb(null, true)
     } else {
-      cb(new Error('Solo se permiten archivos .png, .jpg, .jpeg y .pdf'), false)
+      cb(
+        new Error("Solo se permiten archivos .png, .jpg, .jpeg, .tiff y .pdf"),
+        false
+      );
     }
   }
 })
