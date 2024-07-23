@@ -1,67 +1,55 @@
 Estoy desarrollando con un equipo este proyecto:
 
-Descripción del Proyecto:
-
-Desarrollaremos una aplicación web SPA (Single Page Application) para un museo de archivos históricos utilizando Express.js para el backend y React+Vite para el frontend. La base de datos se gestionará con MySQL. El objetivo es permitir a los visitantes consultar y visualizar archivos históricos, mientras que los empleados y administradores podrán gestionar y cargar archivos en el sistema.
-
+DESCRIPCIÓN DEL PROYECTO:
+Desarrollaremos una aplicación web SPA (Single Page Application) para un museo de archivos históricos utilizando Express.js para el backend y React+Vite para el frontend, se usará CSS puro sin librerías, es necesario que el sitio sea responsive. La base de datos se gestionará con MySQL. Se utilizará Github para gestionar los repositorios del frontend y backend por separado. El objetivo es permitir a los visitantes consultar y visualizar archivos históricos, mientras que los empleados y administradores podrán gestionar y cargar archivos en el sistema.
 Requisitos Funcionales:
+1.	Roles de Usuario:
+o	Visitante: Puede buscar y ver archivos sin necesidad de iniciar sesión o registrarse.
+o	Usuario Registrado: Puede buscar y ver archivos, guardar archivos en una lista de favoritos y ver el historial de archivos visitados. Requiere registro e inicio de sesión.
+o	Empleado: Puede buscar y ver archivos, subir imágenes y PDFs a través de formularios (cada formulario puede contener múltiples imágenes o PDFs), gestionar sus favoritos e historial de archivos subidos y modificados. Requiere registro e inicio de sesión.
+o	Administrador: Tiene todos los permisos de los empleados, además de gestionar los permisos de los empleados (gestionar permisos como agregar, modificar, descargar, ver archivos ocultos o eliminar archivos). También puede restablecer la base de datos a un punto anterior y editar la portada, sección institucional y la sección “acerca de…” del sitio. Requiere registro e inicio de sesión.
+2.	Registro y Autenticación:
+o	Sección de registro que requiere correo electrónico, contraseña, nombre y apellido.
+o	Validación de cuenta por correo electrónico, el usuario recibirá un correo con un enlace de verificación, luego de validar la verificación es registrado el usuario nuevo. Si el usuario no valida dentro de la primera hora, el registro es cancelado.
+o	Sección de Inicio de sesión.
+o	Mostrar por una notificación no invasiva que el usuario está conectado en el sitio y mostrar su rol.
+o	La sección de historial y favoritos será una barra lateral ocultable en la derecha donde también mostrará los datos del perfil del usuario conectado y su rol.
+o	Se necesita una sección para modificar los datos de usuario como nombre, apellido, contraseña y correo.
+o	Permitir cerrar sesión.
+3.	Gestión de Archivos (solo empleados y administradores):
+o	Formulario de carga de archivos para empleados y administradores, permitiendo la subida de múltiples imágenes y PDFs.
+o	Al buscar archivos los administradores y empleados pueden ver opciones para editar o eliminar archivos.
+o	Baja lógica al eliminar archivos (se eliminarán de la base de datos después de un período), se permitirá restaurar archivo, solo administradores.
+o	Sección de historial de archivos subidos y modificados por empleados y administradores (visible para ambos), permitirá a los administradores restaurar archivos modificados a un estado anterior.
+o	Sección solo para administradores para activar nuevos empleados y otorgarles permisos (permisos como poder usar el formulario y crear archivos, modificar archivos, borrar archivos, ver archivos ocultos, descargar archivos).
+o	Sección solo para administradores de editar imagen del home, titulo y texto de la página.
+o	Sección solo para administradores de editar sección institucional.
+o	Sección solo para administradores de editar sección acerca de.
+o	Sección solo para administradores de editar sección datos de contacto del footer.
+o	La sección de Empleados y Administradores será una barra lateral ocultable en la izquierda, el empleado solo podrá ver sus opciones habilitadas, el administrador puede ver todas las opciones.
 
-Roles de Usuario:
-
-Visitante: Puede buscar y ver archivos sin necesidad de iniciar sesión o registrarse.
-Usuario Registrado: Puede buscar y ver archivos, guardar archivos en una lista de favoritos y ver el historial de archivos visitados. Requiere registro e inicio de sesión.
-Empleado: Puede buscar y ver archivos, subir imágenes y PDFs a través de formularios (cada formulario puede contener múltiples imágenes o PDFs), gestionar sus favoritos e historial de archivos subidos y modificados. Requiere registro e inicio de sesión.
-Administrador: Tiene todos los permisos de los empleados, además de gestionar los permisos de los empleados (como agregar, modificar, descargar, ver archivos ocultos o eliminar archivos). También puede restablecer la base de datos a un punto anterior y editar la portada, sección institucional y la sección “acerca de…” del sitio. Requiere registro e inicio de sesión.
-Registro y Autenticación:
-
-El registro requiere correo electrónico, contraseña, nombre y apellido.
-Validación de cuenta por correo electrónico.
-Inicio de sesión para usuarios registrados, empleados y administradores.
-Gestión de Archivos:
-
-Formulario de carga de archivos para empleados y administradores, permitiendo la subida de múltiples imágenes y PDFs.
-Baja lógica al eliminar archivos (se eliminarán de la base de datos después de un período).
-Historial de archivos subidos y modificados por empleados y administradores.
-Visor de imágenes y PDFs integrado, sin permiso de descarga para visitantes y usuarios registrados. Solo empleados con permisos y administradores pueden descargar.
-Funcionalidades Adicionales:
-
-Contador de visitas de los archivos, que solo cuenta las visitas de visitantes y usuarios, evitando duplicados en el mismo día.
-Botón para compartir enlaces en redes sociales.
+4.	Funcionalidades Adicionales:
+o	Contador de visitas de los archivos, que solo cuenta las visitas de visitantes y usuarios, evitando duplicados en el mismo día.
+o	Sección con Ranking de archivos más visitados por los visitantes y usuarios.
+o	Buscador de archivos.
+o	Sección resultados de búsquedas en vista de lista infinita.
+o	Sección visor de archivo con detalles del archivo y la vista de las imágenes o pdfs.
+o	Visor de imágenes y PDFs integrado, sin permiso de descarga para visitantes y usuarios registrados. Solo empleados con permisos y administradores pueden descargar.
+o	Botón para compartir enlaces en redes sociales.
+o	Botón para cambiar de modo oscuro a modo claro en el navbar, el modo claro debe usar colores sepia, el modo oscuro debe ser la opción por defecto del sitio.
 Requisitos No Funcionales:
+1.	Seguridad y Privacidad:
+o	Implementación de medidas para restringir el acceso no autorizado a las secciones de empleados y administradores mediante cuentas de usuario y roles.
+2.	Manejo de Gran Volumen de Datos:
+o	El sistema debe soportar un gran volumen de documentos (aproximadamente 360,000 imágenes y PDFs).
+o	Las imágenes deben tener miniaturas para mostrarse en los resultados de búsqueda.
+o	Se evalúa la posibilidad de que sea necesario convertir los archivos de imagen y PDF a formatos AVIF o WEBP, y volver a convertir en JPG al momento de descargar.
+3.	Rendimiento:
+o	El rendimiento debe ser adecuado para permitir una búsqueda y visualización eficiente de documentos.
+4.	Historial, Auditoría y Respaldo:
+o	Historial de creación y última modificación de archivos por empleados y administradores.
+o	No se requiere historial de movimientos de visitantes o usuarios registrados.
 
-Seguridad y Privacidad:
-
-Implementación de medidas para restringir el acceso no autorizado a las secciones de empleados y administradores mediante cuentas de usuario y roles.
-Manejo de Gran Volumen de Datos:
-
-El sistema debe soportar un gran volumen de documentos (aproximadamente 360,000 imágenes y PDFs).
-Rendimiento:
-
-El rendimiento debe ser adecuado para permitir una búsqueda y visualización eficiente de documentos.
-Historial, Auditoría y Respaldo:
-
-Historial de creación y última modificación de archivos por empleados y administradores.
-No se requiere historial de movimientos de visitantes o usuarios registrados.
-Implementación Sugerida:
-
-Backend (Express.js):
-
-Configuración de la base de datos MySQL para gestionar los archivos, usuarios y roles.
-Implementación de API RESTful para manejar las operaciones CRUD de los archivos y la gestión de usuarios.
-Validación de datos y seguridad (autenticación y autorización).
-Frontend (React+Vite):
-
-Desarrollo de una interfaz de usuario intuitiva para buscar, visualizar y gestionar archivos.
-Formularios de registro, inicio de sesión y carga de archivos.
-Visor integrado para imágenes y PDFs.
-Gestión de favoritos e historial de archivos visitados.
-Contador de visitas y botón para compartir en redes sociales.
-Seguridad y Rendimiento:
-
-Uso de JWT (JSON Web Tokens) para autenticación y autorización.
-Optimización de consultas a la base de datos y uso de técnicas de paginación para manejar el gran volumen de documentos.
-Implementación de medidas de seguridad como cifrado de contraseñas y validación de entrada de usuario.
-Esta estructura organizada y detallada ayudará a tu equipo a entender claramente los requisitos y las funcionalidades necesarias para desarrollar la aplicación de manera efectiva.
 
 Tengo esta estructura ya desarrollada en node.js con express.js, ya tengo implementado la ruta file con toda la configuración
 /proyecto
