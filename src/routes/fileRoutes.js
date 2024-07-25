@@ -8,7 +8,7 @@ import {
   searchFilesByDate,
   getFileById,
   getFilesByUser
-} from '../controllers/fileController.js'
+} from '../controllers/fileController/index.js'
 import upload from '../middlewares/uploadMiddleware.js'
 
 const router = Router()
