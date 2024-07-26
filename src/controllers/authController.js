@@ -3,12 +3,14 @@ import register from './authController/register.js'
 import login from './authController/login.js'
 import refreshToken from './authController/refreshToken.js'
 import logout from './authController/logout.js'
+import editUser from './authController/editUser.js'
 
 const authController = {
   register,
   login,
   refreshToken,
-  logout
+  logout,
+  editUser
 }
 
 export default authController

@@ -5,6 +5,7 @@ import findById from './user/findById.js'
 import updateRefreshToken from './user/updateRefreshToken.js'
 import findByRefreshToken from './user/findByRefreshToken.js'
 import removeRefreshToken from './user/removeRefreshToken.js'
+import update from './user/update.js'
 
 const User = {
   create,
@@ -12,7 +13,8 @@ const User = {
   findById,
   updateRefreshToken,
   findByRefreshToken,
-  removeRefreshToken
+  removeRefreshToken,
+  update
 }
 
 export default User
