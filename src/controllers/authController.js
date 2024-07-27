@@ -5,6 +5,8 @@ import refreshToken from './authController/refreshToken.js'
 import logout from './authController/logout.js'
 import editUser from './authController/editUser.js'
 import verifyEmail from './authController/verifyEmail.js'
+import forgotPassword from './authController/forgotPassword.js'
+import resetPassword from './authController/resetPassword.js'
 
 const authController = {
   register,
@@ -12,7 +14,9 @@ const authController = {
   refreshToken,
   logout,
   editUser,
-  verifyEmail
+  verifyEmail,
+  forgotPassword,
+  resetPassword
 }
 
 export default authController
