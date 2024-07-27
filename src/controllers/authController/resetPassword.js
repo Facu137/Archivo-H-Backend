@@ -2,10 +2,11 @@
 import jwt from 'jsonwebtoken'
 import { hash } from 'bcrypt'
 import User from '../../models/User.js'
+import { resetPasswordSchema } from '../../schemas/authSchema.js'
 
 const resetPassword = async (req, res) => {
   try {
-    const { token, password } = req.body
+    const { token, password } = resetPasswordSchema.parse(req.body)
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET)
     const userId = decoded.userId
@@ -26,6 +27,11 @@ const resetPassword = async (req, res) => {
     }
     if (error.name === 'TokenExpiredError') {
       return res.status(400).json({ message: 'Token expirado' })
+    }
+    if (error.issues) {
+      return res.status(400).json({
+        message: error.issues.map((issue) => issue.message).join(', ')
+      })
     }
     res.status(500).json({ error: error.message })
   }
