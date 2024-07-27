@@ -4,41 +4,6 @@ import User from '../../models/User.js'
 import generateTokens from './generateTokens.js'
 import { loginSchema } from '../../schemas/authSchema.js'
 
-/**
- * Inicia sesión de un usuario con el correo electrónico y la contraseña proporcionados.
- *
- * @param {Object} req - El objeto de solicitud que contiene el correo electrónico y la contraseña en el cuerpo de la solicitud.
- * @param {Object} req.body - El cuerpo de la solicitud.
- * @param {string} req.body.email - El correo electrónico del usuario que intenta iniciar sesión.
- * @param {string} req.body.password - La contraseña del usuario que intenta iniciar sesión.
- * @param {Object} res - El objeto de respuesta utilizado para enviar el resultado del inicio de sesión.
- * @return {Promise<void>} - Una promesa que se resuelve cuando el inicio de sesión es exitoso o se rechaza con un mensaje de error.
- *
- * @example
- * // Supongamos que tenemos un servidor Express configurado y una ruta para el inicio de sesión.
- * app.post('/login', login);
- *
- * // Luego, desde el cliente, podríamos hacer una solicitud POST a esta ruta con el siguiente cuerpo:
- * const response = await fetch('/login', {
- *   method: 'POST',
- *   headers: {
- *     'Content-Type': 'application/json'
- *   },
- *   body: JSON.stringify({
- *     email: 'usuario@example.com',
- *     password: 'contraseña123'
- *   })
- * });
- *
- * // Si el inicio de sesión es exitoso, la respuesta tendrá un estado 200 y contendrá el token de acceso.
- * if (response.status === 200) {
- *   const data = await response.json();
- *   console.log('Token de acceso:', data.accessToken);
- * } else {
- *   const error = await response.json();
- *   console.error('Error de inicio de sesión:', error.message);
- * }
- */
 const login = async (req, res) => {
   try {
     const validatedData = loginSchema.parse(req.body)
@@ -52,6 +17,14 @@ const login = async (req, res) => {
         .json({ message: 'Correo o contraseña incorrectos' })
     }
 
+    // Verificar si el correo electrónico está verificado
+    if (!user.email_verified) {
+      return res.status(403).json({
+        message:
+          'Por favor, verifica tu correo electrónico antes de iniciar sesión'
+      })
+    }
+
     const passwordMatch = await compare(password, user.contrasena)
 
     if (passwordMatch) {
@@ -63,7 +36,7 @@ const login = async (req, res) => {
         httpOnly: true, // solo accesible en el servidor
         secure: process.env.NODE_ENV === 'production', // solo accesible en https
         sameSite: 'strict', // solo accesible desde el mismo dominio
-        maxAge: 60 * 60 * 1000 // la  cookie expira en 1 hora
+        maxAge: 60 * 60 * 1000 // la cookie expira en 1 hora
       })
 
       // Enviar la información del usuario junto con el token de acceso
