@@ -7,6 +7,8 @@ import editUser from './authController/editUser.js'
 import verifyEmail from './authController/verifyEmail.js'
 import forgotPassword from './authController/forgotPassword.js'
 import resetPassword from './authController/resetPassword.js'
+import initiateAccountDeletion from './authController/initiateAccountDeletion.js'
+import confirmAccountDeletion from './authController/confirmAccountDeletion.js'
 
 const authController = {
   register,
@@ -16,7 +18,9 @@ const authController = {
   editUser,
   verifyEmail,
   forgotPassword,
-  resetPassword
+  resetPassword,
+  initiateAccountDeletion,
+  confirmAccountDeletion
 }
 
 export default authController

@@ -5,7 +5,7 @@ import User from '../../models/User.js'
 const verifyEmail = async (req, res) => {
   try {
     let { token } = req.query
-    console.log('Token recibido (codificado):', token)
+    // console.log('Token recibido (codificado):', token)
 
     // Decodificar el token
     token = decodeURIComponent(token)
