@@ -2,6 +2,12 @@
 import User from '../../models/User.js'
 import transporter from '../../config/mail.js'
 import jwt from 'jsonwebtoken'
+import fs from 'fs'
+import path from 'path'
+import { fileURLToPath } from 'url'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 const initiateAccountDeletion = async (req, res) => {
   try {
@@ -56,15 +62,18 @@ const initiateAccountDeletion = async (req, res) => {
 
       const deletionLink = `${process.env.BACKEND_URL}/auth/confirm-acc-deletion?token=${token}`
 
+      const templatePath = path.join(
+        __dirname,
+        '../../templates/accountDeletionEmail.html'
+      )
+      let htmlTemplate = fs.readFileSync(templatePath, 'utf8')
+      htmlTemplate = htmlTemplate.replace('{deletionLink}', deletionLink)
+
       await transporter.sendMail({
         from: process.env.MAIL_USER,
         to: user.email,
         subject: 'Confirmación de baja de cuenta',
-        html: `
-          <p>Haz clic en el siguiente enlace para confirmar la baja de tu cuenta:</p>
-          <a href="${deletionLink}">Confirmar baja de cuenta</a>
-          <p>Este enlace expirará en 1 hora.</p>
-        `
+        html: htmlTemplate
       })
 
       res.status(200).json({
