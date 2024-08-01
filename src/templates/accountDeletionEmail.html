@@ -1,10 +1,10 @@
-<!-- src\templates\forgotPasswordEmail.html -->
+<!-- src\templates\accountDeletionEmail.html -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recuperación de Contraseña - Archivo Histórico de Santiago del Estero</title>
+    <title>Confirmación de Baja de Cuenta - Archivo Histórico de Santiago del Estero</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -43,11 +43,6 @@
             color: #666;
             text-align: center;
         }
-
-        i {
-            font-style: italic;
-            color: #d13333;
-        }
     </style>
 </head>
 <body>
@@ -56,15 +51,13 @@
     </div>
     <div class="content">
         <p>Estimado/a usuario/a,</p>
-        <p>Hemos recibido una solicitud para restablecer la contraseña de su cuenta en el Archivo Histórico de Santiago del Estero. Si no ha solicitado esto, puede ignorar este mensaje.</p>
-        <p>Para restablecer su contraseña, haga clic en el siguiente botón:</p>
+        <p>Hemos recibido una solicitud para dar de baja su cuenta en el Archivo Histórico de Santiago del Estero. Si no ha solicitado esto, puede ignorar este mensaje.</p>
+        <p>Para confirmar la baja de su cuenta, haga clic en el siguiente botón:</p>
         <p style="text-align: center;">
-            <a href="http://localhost:5173/reset-password?token={encodedToken}" class="button">Restablecer Contraseña</a>
+            <a href="{deletionLink}" class="button">Confirmar baja de cuenta</a>
         </p>
-        <p>Si el botón no funciona, puede copiar y pegar el siguiente enlace en su navegador:</p>
-        <p><i>http://localhost:5173/reset-password?token={encodedToken}</i></p>
-        <p>Este enlace será válido por las próximas 1 hora. Si no completa el proceso dentro de este período, deberá solicitar un nuevo enlace de recuperación de contraseña.</p>
-        <p>Si no ha solicitado restablecer la contraseña, por favor ignore este mensaje.</p>
+        <p>Este enlace será válido por las próximas 1 hora. Si no completa el proceso dentro de este período, deberá solicitar un nuevo enlace de confirmación de baja de cuenta.</p>
+        <p>Si no ha solicitado dar de baja su cuenta, por favor ignore este mensaje.</p>
     </div>
     <div class="footer">
         <p>Este es un mensaje automático, por favor no responda a este correo.</p>
