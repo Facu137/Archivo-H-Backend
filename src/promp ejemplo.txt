@@ -51,7 +51,7 @@ o	Historial de creación y última modificación de archivos por empleados y adm
 o	No se requiere historial de movimientos de visitantes o usuarios registrados.
 
 
-Tengo esta estructura ya desarrollada en node.js con express.js, ya tengo implementado la ruta file con toda la configuración
+Tengo esta estructura ya desarrollada en node.js con express.js
 estructura del proyecto:
 
 src
@@ -60,9 +60,11 @@ src
 │   └── mail.js
 ├── controllers
 │   ├── authController
+│   │   ├── confirmAccountDeletion.js
 │   │   ├── editUser.js
 │   │   ├── forgotPassword.js
 │   │   ├── generateTokens.js
+│   │   ├── initiateAccountDeletion.js
 │   │   ├── login.js
 │   │   ├── logout.js
 │   │   ├── refreshToken.js
@@ -82,9 +84,13 @@ src
 ├── models
 │   ├── user
 │   │   ├── create.js
+│   │   ├── deleteUser.js
+│   │   ├── findAdminById.js
 │   │   ├── findByEmail.js
 │   │   ├── findByID.js
 │   │   ├── findByRefreshToken.js
+│   │   ├── findEmployeeById.js
+│   │   ├── promoteEmployeeToAdmin.js
 │   │   ├── removeRefreshToken.js
 │   │   ├── update.js
 │   │   └── updateRefreshToken.js
@@ -95,8 +101,9 @@ src
 ├── schemas
 │   └── authSchema.js
 ├── templates
-│   ├──forgotPasswordEmail.html
-│   └──verificationEmail.html
+│   ├── accountDeletionEmail.html
+│   ├── forgotPasswordEmail.html
+│   └── verificationEmail.html
 ├── utils
 ├── app.js
 └── prompt_ejemplo.txt
