@@ -1,25 +1,21 @@
 // src/controllers/fileController/uploadFileGeneral.js
 import pool from '../../config/db.js'
 import path from 'path'
+import { validateFileUpload } from '../../schemas/fileSchema.js'
 
 export const uploadFileGeneral = async (req, res, next) => {
-  if (!req.file) {
-    return res.status(400).send('No se subió ningún archivo')
-  }
-
   const connection = await pool.getConnection()
 
   try {
-    await connection.beginTransaction()
+    // Validar los datos de entrdada
+    const validatedData = validateFileUpload({ ...req.body, file: req.file })
 
+    // Si la validación pasa, destructurar los datos validados
     const {
-      // Datos del legajo
       legajoNumero,
       legajoEsBis,
-      // Datos del expediente
       expedienteNumero,
       expedienteEsBis,
-      // Datos del documento
       tipoDocumento,
       anio,
       mes,
@@ -29,30 +25,12 @@ export const uploadFileGeneral = async (req, res, next) => {
       folios,
       esPublico,
       creadorId,
-      // Datos de la persona
       personaNombre,
       personaTipo,
       personaRol
-    } = req.body
+    } = validatedData
 
-    console.log('Datos recibidos:', {
-      legajoNumero,
-      legajoEsBis,
-      expedienteNumero,
-      expedienteEsBis,
-      tipoDocumento,
-      anio,
-      mes,
-      dia,
-      caratulaAsuntoExtracto,
-      tema,
-      folios,
-      esPublico,
-      creadorId,
-      personaNombre,
-      personaTipo,
-      personaRol
-    })
+    await connection.beginTransaction()
 
     // Insertar o obtener legajo
     const [legajoResult] = await connection.query(
@@ -61,16 +39,12 @@ export const uploadFileGeneral = async (req, res, next) => {
     )
     const legajoId = legajoResult.insertId
 
-    console.log('Legajo insertado/obtenido con ID:', legajoId)
-
     // Insertar expediente
     const [expedienteResult] = await connection.query(
       'INSERT INTO expedientes (legajo_id, numero, es_bis) VALUES (?, ?, ?)',
       [legajoId, expedienteNumero, expedienteEsBis]
     )
     const expedienteId = expedienteResult.insertId
-
-    console.log('Expediente insertado con ID:', expedienteId)
 
     // Insertar documento
     const [documentoResult] = await connection.query(
@@ -90,8 +64,6 @@ export const uploadFileGeneral = async (req, res, next) => {
     )
     const documentoId = documentoResult.insertId
 
-    console.log('Documento insertado con ID:', documentoId)
-
     // Insertar o obtener persona
     const [personaResult] = await connection.query(
       'INSERT INTO personas_archivo (nombre, tipo) VALUES (?, ?) ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id)',
@@ -99,27 +71,25 @@ export const uploadFileGeneral = async (req, res, next) => {
     )
     const personaId = personaResult.insertId
 
-    console.log('Persona insertada/obtenida con ID:', personaId)
-
     // Relacionar persona con documento
     await connection.query(
       'INSERT INTO documentos_personas (documento_id, persona_id, rol) VALUES (?, ?, ?)',
       [documentoId, personaId, personaRol]
     )
 
-    console.log('Persona relacionada con documento')
-
     // Insertar la imagen asociada al documento
-    await connection.query(
-      'INSERT INTO imagenes (documento_id, url, tipo_imagen) VALUES (?, ?, ?)',
-      [
-        documentoId,
-        req.file.filename,
-        path.extname(req.file.originalname).slice(1)
-      ]
-    )
+    if (req.file) {
+      await connection.query(
+        'INSERT INTO imagenes (documento_id, url, tipo_imagen) VALUES (?, ?, ?)',
+        [
+          documentoId,
+          req.file.filename,
+          path.extname(req.file.originalname).slice(1)
+        ]
+      )
+    }
 
-    console.log('Imagen insertada con URL:', req.file.filename)
+    await connection.commit()
 
     // Pasar la conexión y los IDs a la siguiente función
     req.connection = connection
@@ -128,10 +98,30 @@ export const uploadFileGeneral = async (req, res, next) => {
     req.legajoId = legajoId
     req.personaId = personaId
 
+    res.status(201).json({
+      message: 'Documento subido y registrado con éxito',
+      documentoId,
+      expedienteId,
+      legajoId,
+      personaId
+    })
+
     next()
   } catch (error) {
     await connection.rollback()
+
+    if (error.name === 'ZodError') {
+      return res.status(400).json({
+        message: 'Error de validación',
+        errors: error.errors
+      })
+    }
+
     console.error('Error al guardar en la base de datos:', error)
-    res.status(500).send('Error al guardar el documento en la base de datos')
+    res
+      .status(500)
+      .json({ message: 'Error al guardar el documento en la base de datos' })
+  } finally {
+    connection.release()
   }
 }

@@ -1,17 +1,21 @@
 // src/controllers/fileController/uploadFileMensura.js
-
+import { validateMensuraUpload } from '../../schemas/mensuraSchema.js'
 export const uploadFileMensura = async (req, res) => {
   const connection = req.connection
   const documentoId = req.documentoId
 
   try {
+    // Validar los datos de entrada específicos de mensura
+    const validatedData = validateMensuraUpload({ ...req.body, file: req.file })
+
+    // Insertar o actualizar mensura
     const {
       lugar,
       propiedad,
       departamentoId,
       departamentoNombre,
       departamentoEsActual
-    } = req.body
+    } = validatedData
 
     await connection.query(
       'INSERT INTO mensura (id, lugar, propiedad) VALUES (?, ?, ?)',
@@ -51,12 +55,16 @@ export const uploadFileMensura = async (req, res) => {
       personaId: req.personaId
     })
   } catch (error) {
-    await connection.rollback()
-    console.error('Error al guardar en la base de datos:', error)
+    if (error.name === 'ZodError') {
+      return res.status(400).json({
+        message: 'Error de validación en datos de mensura',
+        errors: error.errors
+      })
+    }
+
+    console.error('Error al procesar el documento de mensura:', error)
     res
       .status(500)
-      .send('Error al guardar el documento Mensura en la base de datos')
-  } finally {
-    connection.release()
+      .json({ message: 'Error al procesar el documento de mensura' })
   }
 }

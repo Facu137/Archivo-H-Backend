@@ -1,10 +1,16 @@
 // src/controllers/fileController/uploadFileNotarial.js
+import { validateNotarialUpload } from '../../schemas/notarialSchema.js'
+import { uploadFileGeneral } from './uploadFileGeneral.js'
 
-export const uploadFileNotarial = async (req, res) => {
-  const connection = req.connection
-  const documentoId = req.documentoId
-
+export const uploadFileNotarial = async (req, res, next) => {
   try {
+    // Validar los datos de entrada específicos de documentos notariales
+    const validatedData = validateNotarialUpload({
+      ...req.body,
+      file: req.file
+    })
+
+    // Extraer los datos específicos de documentos notariales
     const {
       registro,
       protocolo,
@@ -12,38 +18,46 @@ export const uploadFileNotarial = async (req, res) => {
       mesFin,
       escrituraNro,
       negocioJuridico
-    } = req.body
+    } = validatedData
 
-    await connection.query(
-      'INSERT INTO notarial (id, registro, protocolo, mes_inicio, mes_fin, escritura_nro, negocio_juridico) VALUES (?, ?, ?, ?, ?, ?, ?)',
-      [
-        documentoId,
-        registro,
-        protocolo,
-        mesInicio,
-        mesFin,
-        escrituraNro,
-        negocioJuridico
-      ]
-    )
-    console.log('Datos insertados en la tabla Notarial')
+    // Llamar a la función general de carga de archivos
+    await uploadFileGeneral(req, res, async () => {
+      const connection = req.connection
+      const documentoId = req.documentoId
 
-    await connection.commit()
+      // Insertar datos específicos de documentos notariales
+      await connection.query(
+        'INSERT INTO notarial (id, registro, protocolo, mes_inicio, mes_fin, escritura_nro, negocio_juridico) VALUES (?, ?, ?, ?, ?, ?, ?)',
+        [
+          documentoId,
+          registro,
+          protocolo,
+          mesInicio,
+          mesFin,
+          escrituraNro,
+          negocioJuridico
+        ]
+      )
 
-    res.json({
-      message: 'Documento Notarial y archivo subidos y guardados correctamente',
-      documentoId,
-      expedienteId: req.expedienteId,
-      legajoId: req.legajoId,
-      personaId: req.personaId
+      await connection.commit()
+
+      res.status(201).json({
+        message: 'Documento Notarial subido y registrado con éxito',
+        documentoId: req.documentoId,
+        expedienteId: req.expedienteId,
+        legajoId: req.legajoId,
+        personaId: req.personaId
+      })
     })
   } catch (error) {
-    await connection.rollback()
-    console.error('Error al guardar en la base de datos:', error)
-    res
-      .status(500)
-      .send('Error al guardar el documento Notarial en la base de datos')
-  } finally {
-    connection.release()
+    if (error.name === 'ZodError') {
+      return res.status(400).json({
+        message: 'Error de validación en datos de documento notarial',
+        errors: error.errors
+      })
+    }
+
+    console.error('Error al procesar el documento notarial:', error)
+    res.status(500).json({ message: 'Error al procesar el documento notarial' })
   }
 }
