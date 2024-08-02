@@ -9,6 +9,7 @@ import forgotPassword from './authController/forgotPassword.js'
 import resetPassword from './authController/resetPassword.js'
 import initiateAccountDeletion from './authController/initiateAccountDeletion.js'
 import confirmAccountDeletion from './authController/confirmAccountDeletion.js'
+import requestEmpRole from './authController/requestEmpRole.js'
 
 const authController = {
   register,
@@ -20,7 +21,8 @@ const authController = {
   forgotPassword,
   resetPassword,
   initiateAccountDeletion,
-  confirmAccountDeletion
+  confirmAccountDeletion,
+  requestEmpRole
 }
 
 export default authController

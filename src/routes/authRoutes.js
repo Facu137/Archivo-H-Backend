@@ -16,5 +16,6 @@ router.post('/forgot-password', authController.forgotPassword)
 router.post('/reset-password', authController.resetPassword)
 router.post('/init-acc-deletion', authController.initiateAccountDeletion)
 router.get('/confirm-acc-deletion', authController.confirmAccountDeletion)
+router.post('/request-emp-role', verifyToken, authController.requestEmpRole)
 
 export default router
