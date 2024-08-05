@@ -43,13 +43,15 @@ const requestEmpRole = async (req, res) => {
 
     const admin = adminResult[0]
 
-    if (
-      !admin.habilitar_busqueda_nuevos_empleados ||
-      admin.clave_conversion !== claveConversion
-    ) {
+    if (!admin.habilitar_busqueda_nuevos_empleados) {
       return res.status(403).json({
-        message:
-          'Clave de conversión inválida o búsqueda de nuevos empleados no habilitada'
+        message: 'Búsqueda de nuevos empleados no habilitada'
+      })
+    }
+
+    if (admin.clave_conversion !== claveConversion) {
+      return res.status(403).json({
+        message: 'Clave de conversión inválida'
       })
     }
 

@@ -13,7 +13,7 @@ const create = async (user) => {
         user.password,
         user.nombre,
         user.apellido,
-        user.rol || 'usuario',
+        user.rol || 'usuario', // Por defecto, el rol es 'usuario'
         false // Inicialmente, el correo no está verificado
       ]
     )

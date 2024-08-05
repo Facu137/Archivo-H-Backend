@@ -6,6 +6,7 @@ import { config } from 'dotenv'
 import cookieParser from 'cookie-parser'
 import { refreshAccessToken } from './middlewares/authMiddleware.js'
 import authRoutes from './routes/authRoutes.js'
+import adminRoutes from './routes/adminRoutes.js'
 import fileRoutes from './routes/fileRoutes.js'
 
 config() // Cargar variables de entorno
@@ -27,6 +28,7 @@ app.use(refreshAccessToken) // refrescar token cada vez que se hace una petició
 
 // Rutas
 app.use('/auth', authRoutes) // Ruta para autenticación
+app.use('/admin', adminRoutes) // Ruta para administradores
 app.use('/api', fileRoutes) // Ruta para subir archivos
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads'))) // Ruta para archivos
 

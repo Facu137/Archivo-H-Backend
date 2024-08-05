@@ -69,6 +69,7 @@ src
 │   │   ├── logout.js
 │   │   ├── refreshToken.js
 │   │   ├── register.js
+│   │   ├── requestEmpRole.js
 │   │   ├── resetPassword.js
 │   │   └── verifyEmail.js
 │   ├── authController.js
