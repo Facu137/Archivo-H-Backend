@@ -18,7 +18,12 @@ const register = async (req, res) => {
 
     const existingUser = await User.findByEmail(email)
     if (existingUser) {
-      return res.status(409).json({ message: 'El usuario ya existe' })
+      if (existingUser.email_verified) {
+        return res.status(409).json({ message: 'El usuario ya existe' })
+      } else {
+        // Eliminar el usuario no verificado
+        await User.deleteUser(existingUser.id)
+      }
     }
 
     const hashedPassword = await hash(password, 10)
@@ -27,7 +32,7 @@ const register = async (req, res) => {
       password: hashedPassword,
       nombre,
       apellido,
-      rol: rol || 'usuario'
+      rol: rol || 'usuario' // Por defecto, el rol es 'usuario'
     }
 
     const result = await User.create(user)
