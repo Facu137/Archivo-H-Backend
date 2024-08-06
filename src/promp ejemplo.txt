@@ -59,6 +59,12 @@ src
 │   ├── db.js
 │   └── mail.js
 ├── controllers
+│   ├── adminController
+│   │   ├── convertToEmployee.js
+│   │   ├── getConversionKey.js
+│   │   ├── listPossibleEmployees.js
+│   │   ├── updateConversionKey.js
+│   │   └── updateSearchNewEmployees.js
 │   ├── authController
 │   │   ├── confirmAccountDeletion.js
 │   │   ├── editUser.js
@@ -72,6 +78,7 @@ src
 │   │   ├── requestEmpRole.js
 │   │   ├── resetPassword.js
 │   │   └── verifyEmail.js
+│   ├── adminController.js
 │   ├── authController.js
 │   └── fileController
 ├── middlewares
@@ -97,6 +104,7 @@ src
 │   │   └── updateRefreshToken.js
 │   └── User.js
 ├── routes
+│   ├── adminRoutes.js
 │   ├── authRoutes.js
 │   └── fileRoutes.js
 ├── schemas
