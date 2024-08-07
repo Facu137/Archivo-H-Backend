@@ -6,6 +6,7 @@ import {
   uploadFileNotarial
 } from '../controllers/fileController/index.js'
 import upload from '../middlewares/uploadMiddleware.js'
+import { checkAdminOrEmployeeRole } from '../middlewares/authMiddleware/checkRole.js'
 
 const router = Router()
 
@@ -27,5 +28,6 @@ router.post(
   uploadFileGeneral,
   uploadFileMensura
 )
+router.post('/upload', checkAdminOrEmployeeRole, uploadFileGeneral)
 
 export default router
