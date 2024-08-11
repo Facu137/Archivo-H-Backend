@@ -25,7 +25,7 @@ const login = async (req, res) => {
       })
     }
 
-    const passwordMatch = await compare(password, user.contrasena)
+    const passwordMatch = compare(password, user.contrasena)
 
     if (passwordMatch) {
       const { accessToken, refreshToken } = generateTokens(user)
@@ -36,7 +36,7 @@ const login = async (req, res) => {
         httpOnly: true, // solo accesible en el servidor
         secure: process.env.NODE_ENV === 'production', // solo accesible en https
         sameSite: 'strict', // solo accesible desde el mismo dominio
-        maxAge: 60 * 60 * 1000 // la cookie expira en 1 hora
+        maxAge: 7 * 24 * 60 * 60 * 1000 // la cookie expira en 7 días
       })
 
       // Enviar la información del usuario junto con el token de acceso
@@ -47,7 +47,7 @@ const login = async (req, res) => {
           name: user.nombre,
           lastName: user.apellido,
           email: user.email,
-          role: user.rol
+          rol: user.rol
         }
       })
     } else {

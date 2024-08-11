@@ -85,7 +85,6 @@ src
 │   ├── authMiddleware
 │   │   ├── checkPermission.js
 │   │   ├── checkRole.js
-│   │   ├── refreshAccessToken.js
 │   │   └── verifyToken.js
 │   ├── authMiddleware.js
 │   └── uploadMiddleware.js

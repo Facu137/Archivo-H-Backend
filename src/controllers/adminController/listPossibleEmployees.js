@@ -5,7 +5,7 @@ const listPossibleEmployees = async (req, res) => {
   const connection = await db.getConnection()
   try {
     const [results] = await connection.query(
-      `SELECT nombre, apellido, email 
+      `SELECT nombre, apellido, rol, email 
        FROM personas_usuarios pu
        JOIN usuarios u ON pu.id = u.persona_id
        WHERE u.posible_empleado = true`
