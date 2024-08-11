@@ -19,7 +19,7 @@ const me = async (req, res) => {
       name: user.nombre,
       lastName: user.apellido,
       email: user.email,
-      role: user.rol
+      rol: user.rol
       // ... otras propiedades del usuario que quieras devolver
     })
   } catch (error) {
