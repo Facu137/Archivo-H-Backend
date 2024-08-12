@@ -7,6 +7,7 @@ import cookieParser from 'cookie-parser'
 import { refreshAccessToken } from './middlewares/authMiddleware.js'
 import authRoutes from './routes/authRoutes.js'
 import fileRoutes from './routes/fileRoutes.js'
+import generalRoutes from './routes/general.js'
 
 config() // Cargar variables de entorno
 
@@ -29,6 +30,7 @@ app.use(refreshAccessToken) // refrescar token cada vez que se hace una petició
 app.use('/auth', authRoutes) // Ruta para autenticación
 app.use('/api', fileRoutes) // Ruta para subir archivos
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads'))) // Ruta para archivos
+app.use('/api', generalRoutes)
 
 // Iniciar servidor
 app.listen(port, () => {
