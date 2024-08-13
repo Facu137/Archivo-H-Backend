@@ -16,8 +16,8 @@ const me = async (req, res) => {
     // Devolver la información del usuario
     return res.status(200).json({
       id: user.id,
-      name: user.nombre,
-      lastName: user.apellido,
+      nombre: user.nombre,
+      apellido: user.apellido,
       email: user.email,
       rol: user.rol
       // ... otras propiedades del usuario que quieras devolver
