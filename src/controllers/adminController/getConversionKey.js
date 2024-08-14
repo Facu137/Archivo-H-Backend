@@ -2,7 +2,7 @@
 import db from '../../config/db.js'
 
 const getConversionKey = async (req, res) => {
-  const { personaId } = req.params
+  const { personaId } = req.body // Obtener personaId del cuerpo de la solicitud
 
   if (!personaId) {
     return res.status(400).json({ message: 'Falta el parámetro personaId' })

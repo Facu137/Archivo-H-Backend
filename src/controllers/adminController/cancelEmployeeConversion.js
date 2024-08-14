@@ -1,4 +1,4 @@
-// src/controllers/adminController/convertToEmployee.js
+// src/controllers/adminController/cancelEmployeeConversion.js
 import db from '../../config/db.js'
 import transporter from '../../config/mail.js'
 import { promises as fs } from 'fs'
@@ -8,9 +8,8 @@ import { dirname, join } from 'path'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
-const convertToEmployee = async (req, res) => {
-  const { userId } = req.body
-
+const cancelEmployeeConversion = async (req, res) => {
+  const { userId } = req.body // Leer userId del cuerpo de la solicitud
   if (!userId) {
     return res.status(400).json({ message: 'Faltan datos requeridos' })
   }
@@ -34,24 +33,10 @@ const convertToEmployee = async (req, res) => {
         .json({ message: 'Usuario no encontrado o no es un posible empleado' })
     }
 
-    // Insertar en la tabla empleados con permisos iniciales en false y activo en false
+    // Actualizar posible_empleado a false en la tabla usuarios
     await connection.query(
-      `INSERT INTO empleados (persona_id, activo, permiso_crear, permiso_editar, permiso_eliminar, permiso_descargar, permiso_ver_archivos_privados)
-       VALUES (?, false, false, false, false, false, false)`,
-      [userId]
-    )
-
-    // Actualizar el rol en personas_usuarios a 'empleado'
-    await connection.query(
-      `UPDATE personas_usuarios 
-       SET rol = 'empleado' 
-       WHERE id = ?`,
-      [userId]
-    )
-
-    // Eliminar de la tabla usuarios
-    await connection.query(
-      `DELETE FROM usuarios 
+      `UPDATE usuarios 
+       SET posible_empleado = false 
        WHERE persona_id = ?`,
       [userId]
     )
@@ -69,7 +54,7 @@ const convertToEmployee = async (req, res) => {
     // Leer la plantilla HTML
     const emailTemplatePath = join(
       __dirname,
-      '../../templates/employeeAcceptanceEmail.html' // Nueva plantilla
+      '../../templates/employeeRejectionEmail.html'
     )
     let emailTemplate = await fs.readFile(emailTemplatePath, 'utf8')
 
@@ -82,7 +67,7 @@ const convertToEmployee = async (req, res) => {
       from: process.env.MAIL_USER,
       to: email,
       subject:
-        'Bienvenido al Equipo - Archivo Histórico de Santiago del Estero',
+        'Notificación de Solicitud de Empleo - Archivo Histórico de Santiago del Estero',
       html: emailTemplate
     }
 
@@ -90,16 +75,16 @@ const convertToEmployee = async (req, res) => {
 
     await connection.commit()
 
-    res.status(200).json({
-      message: 'Usuario convertido a empleado con éxito y correo enviado.'
-    })
+    res
+      .status(200)
+      .json({ message: 'Conversión a empleado cancelada y correo enviado.' })
   } catch (error) {
     await connection.rollback()
-    console.error('Error al convertir a empleado:', error)
+    console.error('Error al cancelar la conversión a empleado:', error)
     res.status(500).json({ message: 'Error interno del servidor' })
   } finally {
     connection.release()
   }
 }
 
-export default convertToEmployee
+export default cancelEmployeeConversion

@@ -73,6 +73,7 @@ src
 │   │   ├── initiateAccountDeletion.js
 │   │   ├── login.js
 │   │   ├── logout.js
+│   │   ├── me.js
 │   │   ├── refreshToken.js
 │   │   ├── register.js
 │   │   ├── requestEmpRole.js
