@@ -25,11 +25,17 @@ router.put(
   checkRole(['administrador']),
   adminController.cancelEmployeeConversion // cancelar Conversión
 )
+router.get(
+  '/get-search-status/:personaId',
+  verifyToken,
+  checkRole(['administrador']),
+  adminController.getSearchStatus // obtener estado activado o desactivado de Busqueda de Nuevos Empleados
+)
 router.put(
   '/update-search-new-employees',
   verifyToken,
   checkRole(['administrador']),
-  adminController.updateSearchNewEmployees // habilitar Busqueda de Nuevos Empleados
+  adminController.updateSearchNewEmployees // habilitar o deshabilitar Busqueda de Nuevos Empleados
 )
 router.put(
   '/update-conversion-key',
@@ -38,7 +44,7 @@ router.put(
   adminController.updateConversionKey // actualizar Clave de Conversión
 )
 router.get(
-  '/get-conversion-key',
+  '/get-conversion-key/:personaId',
   verifyToken,
   checkRole(['administrador']),
   adminController.getConversionKey // obtener Clave de Conversión

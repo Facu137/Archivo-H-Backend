@@ -2,7 +2,7 @@
 import db from '../../config/db.js'
 
 const getConversionKey = async (req, res) => {
-  const { personaId } = req.body // Obtener personaId del cuerpo de la solicitud
+  const { personaId } = req.params
 
   if (!personaId) {
     return res.status(400).json({ message: 'Falta el parámetro personaId' })
@@ -17,7 +17,6 @@ const getConversionKey = async (req, res) => {
       return res.status(404).json({ message: 'Administrador no encontrado' })
     }
     res.status(200).json({
-      message: 'Clave de conversión obtenida con éxito',
       claveConversion: results[0].clave_conversion
     })
   } catch (err) {
