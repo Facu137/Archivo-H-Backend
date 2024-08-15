@@ -13,9 +13,15 @@ const updateSearchNewEmployees = async (req, res) => {
 
   try {
     await db.query(query, [habilitarBusquedaEmpleados, personaId])
-    res
-      .status(200)
-      .json({ message: 'Búsqueda de nuevos empleados actualizada con éxito' })
+    if (habilitarBusquedaEmpleados) {
+      res.status(200).json({
+        message: 'La busqueda de nuevos empleados esta activada'
+      })
+    } else {
+      res.status(200).json({
+        message: 'La busqueda de nuevos empleados esta desactivada'
+      })
+    }
   } catch (err) {
     res.status(500).json({
       message: 'Error al actualizar la búsqueda de nuevos empleados',

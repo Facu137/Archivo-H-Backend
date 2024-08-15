@@ -17,7 +17,6 @@ const getConversionKey = async (req, res) => {
       return res.status(404).json({ message: 'Administrador no encontrado' })
     }
     res.status(200).json({
-      message: 'Clave de conversión obtenida con éxito',
       claveConversion: results[0].clave_conversion
     })
   } catch (err) {
