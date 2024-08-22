@@ -33,23 +33,14 @@ const login = async (req, res) => {
       await User.updateRefreshToken(user.id, refreshToken)
 
       res.cookie('refreshToken', refreshToken, {
-        httpOnly: true, // solo accesible en el servidor
+        httpOnly: true, // solo accesible desde el servidor
         secure: process.env.NODE_ENV === 'production', // solo accesible en https
         sameSite: 'strict', // solo accesible desde el mismo dominio
-        maxAge: 7 * 24 * 60 * 60 * 1000 // la cookie expira en 7 días
+        maxAge: 7 * 24 * 60 * 60 * 1000 // la cookie expirará en 7 días
       })
 
-      // Enviar la información del usuario junto con el token de acceso
-      return res.status(200).json({
-        accessToken,
-        user: {
-          id: user.id,
-          nombre: user.nombre,
-          apellido: user.apellido,
-          email: user.email,
-          rol: user.rol
-        }
-      })
+      // Solo devolver el token de acceso
+      return res.status(200).json({ accessToken })
     } else {
       return res
         .status(401)
