@@ -4,11 +4,11 @@ import { z } from 'zod'
 export const fileSchema = z.object({
   // Datos del legajo
   legajoNumero: z.string().min(1, 'El número de legajo es requerido'),
-  legajoEsBis: z.number().int().min(0).max(10),
+  legajoEsBis: z.coerce.number().int().min(0).max(10),
 
   // Datos del expediente
   expedienteNumero: z.string().min(1, 'El número de expediente es requerido'),
-  expedienteEsBis: z.number().int().min(0).max(10),
+  expedienteEsBis: z.coerce.number().int().min(0).max(10),
 
   // Datos del documento
   tipoDocumento: z.enum(
@@ -23,16 +23,22 @@ export const fileSchema = z.object({
     ],
     'Tipo de documento no válido'
   ),
-  anio: z.number().int().min(1800).max(new Date().getFullYear()),
-  mes: z.number().int().min(1).max(12).optional(),
-  dia: z.number().int().min(1).max(31).optional(),
+  anio: z.coerce.number().int().min(1800).max(new Date().getFullYear()),
+  mes: z.coerce.number().int().min(1).max(12).optional(),
+  dia: z.coerce.number().int().min(1).max(31).optional(),
   caratulaAsuntoExtracto: z
     .string()
     .min(1, 'La carátula/asunto/extracto es requerido'),
   tema: z.string().min(1, 'El tema es requerido'),
-  folios: z.number().int().positive('El número de folios debe ser positivo'),
-  esPublico: z.boolean(),
-  creadorId: z
+  folios: z.coerce
+    .number()
+    .int()
+    .positive('El número de folios debe ser positivo'),
+  esPublico: z.preprocess(
+    (val) => val === 'true' || val === true || val === 1,
+    z.boolean()
+  ),
+  creadorId: z.coerce
     .number()
     .int()
     .positive('El ID del creador debe ser un número positivo'),
