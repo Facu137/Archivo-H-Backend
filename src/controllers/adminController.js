@@ -6,6 +6,8 @@ import getSearchStatus from './adminController/getSearchStatus.js'
 import updateSearchNewEmployees from './adminController/updateSearchNewEmployees.js'
 import updateConversionKey from './adminController/updateConversionKey.js'
 import getConversionKey from './adminController/getConversionKey.js'
+import listEmployees from './adminController/listEmployees.js'
+import updateEmployee from './adminController/updateEmployee.js'
 
 const adminController = {
   listPossibleEmployees,
@@ -14,7 +16,9 @@ const adminController = {
   getSearchStatus,
   updateSearchNewEmployees,
   updateConversionKey,
-  getConversionKey
+  getConversionKey,
+  listEmployees,
+  updateEmployee
 }
 
 export default adminController

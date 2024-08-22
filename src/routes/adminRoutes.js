@@ -49,5 +49,17 @@ router.get(
   checkRole(['administrador']),
   adminController.getConversionKey // obtener Clave de Conversión
 )
+router.get(
+  '/list-employees',
+  verifyToken,
+  checkRole(['administrador']),
+  adminController.listEmployees // listar Empleados
+)
+router.put(
+  '/update-employee/:employeeId',
+  verifyToken,
+  checkRole(['administrador']),
+  adminController.updateEmployee // actualizar Empleado
+)
 
 export default router
