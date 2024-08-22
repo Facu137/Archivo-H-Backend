@@ -51,8 +51,7 @@ o	Historial de creación y última modificación de archivos por empleados y adm
 o	No se requiere historial de movimientos de visitantes o usuarios registrados.
 
 
-Tengo esta estructura ya desarrollada en node.js con express.js
-estructura del proyecto:
+Estructura del proyecto en node.js con express.js:
 
 src
 ├── config
@@ -60,10 +59,14 @@ src
 │   └── mail.js
 ├── controllers
 │   ├── adminController
+│   │   ├── cancelEmployeeConversion.js
 │   │   ├── convertToEmployee.js
 │   │   ├── getConversionKey.js
+│   │   ├── getSearchStatus.js
+│   │   ├── listEmployees.js
 │   │   ├── listPossibleEmployees.js
 │   │   ├── updateConversionKey.js
+│   │   ├── updateEmployee.js
 │   │   └── updateSearchNewEmployees.js
 │   ├── authController
 │   │   ├── confirmAccountDeletion.js
@@ -111,6 +114,8 @@ src
 │   └── authSchema.js
 ├── templates
 │   ├── accountDeletionEmail.html
+│   ├── employeeAcceptanceEmail.html
+│   ├── employeeRejectionEmail.html
 │   ├── forgotPasswordEmail.html
 │   └── verificationEmail.html
 ├── utils

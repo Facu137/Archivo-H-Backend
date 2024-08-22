@@ -25,9 +25,7 @@ const requestEmpRole = async (req, res) => {
     const user = userResult[0]
 
     if (user.rol !== 'usuario') {
-      return res
-        .status(400)
-        .json({ message: 'El usuario ya tiene un rol diferente a usuario' })
+      return res.status(400).json({ message: 'Ya tienes un rol de Empleado' })
     }
 
     // Verificar si la clave de conversión es válida y si el administrador tiene habilitada la búsqueda de nuevos empleados
