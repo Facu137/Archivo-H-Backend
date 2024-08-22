@@ -1,27 +1,40 @@
 // src/schemas/mensuraSchema.js
 import { z } from 'zod'
+import { fileSchema } from './fileSchema.js' // Importa fileSchema
 
 const baseSchema = z.object({
   // Datos del legajo
   legajoNumero: z.string().min(1, 'El número de legajo es requerido'),
-  legajoEsBis: z.boolean(),
+  legajoEsBis: z.preprocess(
+    (val) => val === 'true' || val === true || val === 1,
+    z.boolean()
+  ),
 
   // Datos del expediente
   expedienteNumero: z.string().min(1, 'El número de expediente es requerido'),
-  expedienteEsBis: z.boolean(),
+  expedienteEsBis: z.preprocess(
+    (val) => val === 'true' || val === true || val === 1,
+    z.boolean()
+  ),
 
   // Datos del documento
   tipoDocumento: z.literal('Mensura'),
-  anio: z.number().int().min(1800).max(new Date().getFullYear()),
-  mes: z.number().int().min(1).max(12).optional(),
-  dia: z.number().int().min(1).max(31).optional(),
+  anio: z.coerce.number().int().min(1800).max(new Date().getFullYear()),
+  mes: z.coerce.number().int().min(1).max(12).optional(),
+  dia: z.coerce.number().int().min(1).max(31).optional(),
   caratulaAsuntoExtracto: z
     .string()
     .min(1, 'La carátula/asunto/extracto es requerido'),
   tema: z.string().min(1, 'El tema es requerido'),
-  folios: z.number().int().positive('El número de folios debe ser positivo'),
-  esPublico: z.boolean(),
-  creadorId: z
+  folios: z.coerce
+    .number()
+    .int()
+    .positive('El número de folios debe ser positivo'),
+  esPublico: z.preprocess(
+    (val) => val === 'true' || val === true || val === 1,
+    z.boolean()
+  ),
+  creadorId: z.coerce
     .number()
     .int()
     .positive('El ID del creador debe ser un número positivo'),
@@ -42,25 +55,7 @@ const baseSchema = z.object({
   propiedad: z.string().min(1, 'La propiedad es requerida')
 })
 
-const fileSchema = z
-  .object({
-    fieldname: z.string(),
-    originalname: z.string(),
-    encoding: z.string(),
-    mimetype: z
-      .string()
-      .refine(
-        (mime) => ['image/jpeg', 'image/png', 'application/pdf'].includes(mime),
-        {
-          message: 'Tipo de archivo no soportado. Use JPEG, PNG o PDF.'
-        }
-      ),
-    destination: z.string(),
-    filename: z.string(),
-    path: z.string(),
-    size: z.number().max(5000000, 'El archivo no debe superar los 5MB')
-  })
-  .optional()
+// El fileSchema no necesita cambios
 
 export const mensuraSchema = baseSchema.extend({
   file: fileSchema
