@@ -24,7 +24,8 @@ async function getAdvancedSearch(req, res) {
     mes_inicio,
     mes_fin,
     escritura_nro,
-    negocio_juridico
+    negocio_juridico,
+    tipo_documento
   } = req.query
 
   let connection
@@ -138,6 +139,9 @@ async function getAdvancedSearch(req, res) {
     if (negocio_juridico) {
       sql += ' AND n.negocio_juridico LIKE ?'
     }
+    if (tipo_documento) {
+      sql += ' AND d.tipo_documento = ?'
+    }
 
     // Ejecutar la consulta
     const values = []
@@ -190,6 +194,9 @@ async function getAdvancedSearch(req, res) {
     }
     if (negocio_juridico) {
       values.push(`%${negocio_juridico}%`)
+    }
+    if (tipo_documento) {
+      values.push(tipo_documento)
     }
 
     const [rows] = await connection.execute(sql, values)
