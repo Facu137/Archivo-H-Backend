@@ -4,7 +4,7 @@ import dbConfig from '../../config/db.js'
 async function getAdvancedSearch(req, res) {
   const {
     legajo,
-    legjajoBis,
+    legajoBis,
     expediente,
     expedienteBis,
     departamento,
@@ -76,7 +76,7 @@ async function getAdvancedSearch(req, res) {
     if (legajo) {
       sql += ' AND l.numero = ?'
     }
-    if (legjajoBis) {
+    if (legajoBis) {
       sql += ' AND l.es_bis = ?'
     }
     if (expediente) {
@@ -146,7 +146,7 @@ async function getAdvancedSearch(req, res) {
     // Ejecutar la consulta
     const values = []
     if (legajo) values.push(legajo)
-    if (legjajoBis) values.push(legjajoBis)
+    if (legajoBis) values.push(legajoBis)
     if (expediente) values.push(expediente)
     if (expedienteBis) values.push(expedienteBis)
     if (departamento) values.push(departamento)
