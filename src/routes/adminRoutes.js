@@ -61,5 +61,16 @@ router.put(
   checkRole(['administrador']),
   adminController.updateEmployee // actualizar Empleado
 )
-
+router.post(
+  '/set-successor',
+  verifyToken,
+  checkRole(['administrador']),
+  adminController.setSucesor // establecer Sucesor
+)
+router.delete(
+  '/remove-employee/:employeeId',
+  verifyToken,
+  checkRole(['administrador']),
+  adminController.removeEmployee // eliminar Empleado y volverlo un usuario
+)
 export default router
