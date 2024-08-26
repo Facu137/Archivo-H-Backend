@@ -7,13 +7,14 @@ const create = async (user) => {
     await connection.beginTransaction()
 
     const [result] = await connection.query(
-      'INSERT INTO personas_usuarios (email, contrasena, nombre, apellido, rol) VALUES (?, ?, ?, ?, ?)',
+      'INSERT INTO personas_usuarios (email, contrasena, nombre, apellido, rol, email_verified) VALUES (?, ?, ?, ?, ?, ?)',
       [
         user.email,
         user.password,
         user.nombre,
         user.apellido,
-        user.rol || 'usuario'
+        user.rol || 'usuario', // Por defecto, el rol es 'usuario'
+        false // Inicialmente, el correo no está verificado
       ]
     )
 

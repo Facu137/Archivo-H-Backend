@@ -3,12 +3,28 @@ import register from './authController/register.js'
 import login from './authController/login.js'
 import refreshToken from './authController/refreshToken.js'
 import logout from './authController/logout.js'
+import editUser from './authController/editUser.js'
+import verifyEmail from './authController/verifyEmail.js'
+import forgotPassword from './authController/forgotPassword.js'
+import resetPassword from './authController/resetPassword.js'
+import initiateAccountDeletion from './authController/initiateAccountDeletion.js'
+import confirmAccountDeletion from './authController/confirmAccountDeletion.js'
+import requestEmpRole from './authController/requestEmpRole.js'
+import me from './authController/me.js'
 
 const authController = {
   register,
   login,
   refreshToken,
-  logout
+  logout,
+  editUser,
+  verifyEmail,
+  forgotPassword,
+  resetPassword,
+  initiateAccountDeletion,
+  confirmAccountDeletion,
+  requestEmpRole,
+  me
 }
 
 export default authController

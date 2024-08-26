@@ -4,8 +4,8 @@ import cors from 'cors'
 import path from 'path'
 import { config } from 'dotenv'
 import cookieParser from 'cookie-parser'
-import { refreshAccessToken } from './middlewares/authMiddleware.js'
 import authRoutes from './routes/authRoutes.js'
+import adminRoutes from './routes/adminRoutes.js'
 import fileRoutes from './routes/fileRoutes.js'
 import generalRoutes from './routes/general.js'
 import advancedRoutes from './routes/advancedRoutes.js'
@@ -25,10 +25,10 @@ app.use(
 CORS es un mecanismo que permite que un sitio web acceda a recursos de otro sitio web. */
 app.use(express.json()) // Permite analizar solicitudes JSON como el body de la petición
 app.use(cookieParser()) // Permite procesar cookies
-app.use(refreshAccessToken) // refrescar token cada vez que se hace una petición
 
 // Rutas
 app.use('/auth', authRoutes) // Ruta para autenticación
+app.use('/admin', adminRoutes) // Ruta para administradores
 app.use('/api', fileRoutes) // Ruta para subir archivos
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads'))) // Ruta para archivos
 app.use('/api', generalRoutes)
