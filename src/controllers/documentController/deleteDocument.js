@@ -1,11 +1,27 @@
 // src/controllers/documentController/deleteDocument.js
 import dbConfig from '../../config/db.js'
+import User from '../../models/User.js'
 
 async function deleteDocument(req, res) {
   const { id } = req.params
   let connection
 
   try {
+    // Verificar si el usuario es administrador o empleado
+    const user = await User.findById(req.user.id)
+    if (user.rol !== 'administrador' && user.rol !== 'empleado') {
+      return res
+        .status(403)
+        .json({ message: 'No eres empleado o administrador' })
+    }
+
+    // Verificar si el empleado tiene permiso de eliminar
+    if (user.rol === 'empleado' && !user.permiso_eliminar) {
+      return res
+        .status(403)
+        .json({ message: 'No tenes el permiso para eliminar archivos' })
+    }
+
     connection = await dbConfig.getConnection()
 
     // Iniciar transacción
@@ -23,7 +39,7 @@ async function deleteDocument(req, res) {
        (tabla_afectada, id_registro_afectado, tipo_documento, columna_modificada, valor_anterior, valor_nuevo, usuario_id)
        SELECT 'documentos', id, tipo_documento, 'esta_eliminado', '0', '1', ? 
        FROM documentos WHERE id = ?`,
-      [req.user.id, id] // Asumiendo que tienes el ID del usuario en req.user.id
+      [req.user.id, id]
     )
 
     // Commit de la transacción

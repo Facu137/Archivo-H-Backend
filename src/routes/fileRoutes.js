@@ -6,28 +6,35 @@ import {
   uploadFileNotarial
 } from '../controllers/fileController/index.js'
 import upload from '../middlewares/uploadMiddleware.js'
-import { checkAdminOrEmployeeRole } from '../middlewares/authMiddleware/checkRole.js'
+import { verifyToken, checkRole } from '../middlewares/authMiddleware.js' // Importar los middlewares
 
 const router = Router()
 
-// Rutas para subir archivos
+// Rutas para subir archivos (con middleware de autenticación)
 router.post(
   '/documents/upload/general',
+  verifyToken, // Verificar el token
+  checkRole(['empleado', 'administrador']), // Verificar el rol
   upload.single('archivo'),
   uploadFileGeneral
 )
 router.post(
   '/documents/upload/notarial',
+  verifyToken, // Verificar el token
+  checkRole(['empleado', 'administrador']), // Verificar el rol
   upload.single('archivo'),
   uploadFileGeneral,
   uploadFileNotarial
 )
 router.post(
   '/documents/upload/mensura',
+  verifyToken, // Verificar el token
+  checkRole(['empleado', 'administrador']), // Verificar el rol
   upload.single('archivo'),
   uploadFileGeneral,
   uploadFileMensura
 )
-router.post('/upload', checkAdminOrEmployeeRole, uploadFileGeneral)
+
+// ... otras rutas
 
 export default router
