@@ -61,6 +61,12 @@ router.put(
   checkRole(['administrador']),
   adminController.updateEmployee // actualizar Empleado
 )
+router.get(
+  '/get-successor/:adminId', // Nueva ruta
+  verifyToken,
+  checkRole(['administrador']),
+  adminController.getSucesor // mostrar Sucesor actual
+)
 router.post(
   '/set-successor',
   verifyToken,

@@ -8,6 +8,7 @@ import updateConversionKey from './adminController/updateConversionKey.js'
 import getConversionKey from './adminController/getConversionKey.js'
 import listEmployees from './adminController/listEmployees.js'
 import updateEmployee from './adminController/updateEmployee.js'
+import getSucesor from './adminController/getSucesor.js'
 import setSucesor from './adminController/setSucesor.js'
 import removeEmployee from './adminController/removeEmployee.js'
 
@@ -21,6 +22,7 @@ const adminController = {
   getConversionKey,
   listEmployees,
   updateEmployee,
+  getSucesor,
   setSucesor,
   removeEmployee
 }

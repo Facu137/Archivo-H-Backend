@@ -63,8 +63,11 @@ src
 │   │   ├── convertToEmployee.js
 │   │   ├── getConversionKey.js
 │   │   ├── getSearchStatus.js
+│   │   ├── getSucesor.js
 │   │   ├── listEmployees.js
 │   │   ├── listPossibleEmployees.js
+│   │   ├── removeEmployee.js
+│   │   ├── setSucesor.js
 │   │   ├── updateConversionKey.js
 │   │   ├── updateEmployee.js
 │   │   └── updateSearchNewEmployees.js
