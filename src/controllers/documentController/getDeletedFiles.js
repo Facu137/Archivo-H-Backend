@@ -1,10 +1,17 @@
 // src/controllers/documentController/getDeletedFiles.js
 import dbConfig from '../../config/db.js'
+import User from '../../models/User.js'
 
 async function getDeletedDocuments(req, res) {
   let connection
 
   try {
+    // Verificar si el usuario es administrador o empleado
+    const user = await User.findById(req.user.id)
+    if (user.rol !== 'administrador' && user.rol !== 'empleado') {
+      return res.status(403).json({ message: 'Acceso denegado' })
+    }
+
     connection = await dbConfig.getConnection()
 
     // Consulta SQL para obtener documentos eliminados
@@ -34,7 +41,7 @@ async function getDeletedDocuments(req, res) {
         n.negocio_juridico AS notarial_negocio_juridico,
         pu.nombre AS usuario_eliminacion_nombre,
         pu.apellido AS usuario_eliminacion_apellido,
-        MAX(ac.fecha_hora) AS fecha_eliminacion  -- Se eliminó el comentario
+        MAX(ac.fecha_hora) AS fecha_eliminacion
       FROM
         auditoria_cambios ac
       JOIN documentos d ON ac.id_registro_afectado = d.id
