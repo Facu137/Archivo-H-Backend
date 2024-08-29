@@ -1,4 +1,4 @@
-// src/controllers/documentController/getAdvancedSearch.js
+// src/controllers/documentController/listDocumentsAdvanced.js
 import dbConfig from '../../config/db.js'
 
 async function getAdvancedSearch(req, res) {

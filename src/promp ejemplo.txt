@@ -82,6 +82,12 @@ src
 │   │   ├── requestEmpRole.js
 │   │   ├── resetPassword.js
 │   │   └── verifyEmail.js
+│   ├── documentController
+│   │   ├── getGeneral.js
+│   │   ├── listDocumentsAdvanced.js
+│   │   ├── deleteDocument.js
+│   │   ├── getDeleteFiles.js
+│   │   ├── restoreDeletedFiles.js
 │   ├── adminController.js
 │   ├── authController.js
 │   └── fileController
