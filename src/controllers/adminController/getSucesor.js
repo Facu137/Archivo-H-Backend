@@ -10,22 +10,16 @@ const getSucesor = async (req, res) => {
 
   const connection = await db.getConnection()
   try {
-    // Obtener el sucesor del administrador y su información de empleado
+    // Obtener el sucesor del administrador y su información de usuario
     const [result] = await connection.query(
       `SELECT 
         a.sucesor as sucesorId, 
         pu.nombre AS sucesorNombre, 
         pu.apellido AS sucesorApellido,
         pu.email AS sucesorEmail,
-        e.activo AS sucesorActivo,
-        e.permiso_crear AS sucesorPermisoCrear,
-        e.permiso_editar AS sucesorPermisoEditar,
-        e.permiso_eliminar AS sucesorPermisoEliminar,
-        e.permiso_descargar AS sucesorPermisoDescargar,
-        e.permiso_ver_archivos_privados AS sucesorPermisoVerArchivosPrivados
+        pu.rol AS sucesorRol
       FROM administradores a
       LEFT JOIN personas_usuarios pu ON a.sucesor = pu.id
-      LEFT JOIN empleados e ON a.sucesor = e.persona_id
       WHERE a.persona_id = ?`,
       [adminId]
     )
@@ -39,21 +33,14 @@ const getSucesor = async (req, res) => {
       return res.status(200).json({ message: 'No tiene sucesor asignado.' })
     }
 
-    // Devolver la información del sucesor, incluyendo datos de empleado
+    // Devolver la información del sucesor
     res.status(200).json({
       sucesor: {
         id: result[0].sucesorId,
         nombre: result[0].sucesorNombre,
         apellido: result[0].sucesorApellido,
         email: result[0].sucesorEmail,
-        activo: result[0].sucesorActivo,
-        permisos: {
-          crear: result[0].sucesorPermisoCrear,
-          editar: result[0].sucesorPermisoEditar,
-          eliminar: result[0].sucesorPermisoEliminar,
-          descargar: result[0].sucesorPermisoDescargar,
-          verArchivosPrivados: result[0].sucesorPermisoVerArchivosPrivados
-        }
+        rol: result[0].sucesorRol
       }
     })
   } catch (error) {

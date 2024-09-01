@@ -10,6 +10,7 @@ import listEmployees from './adminController/listEmployees.js'
 import updateEmployee from './adminController/updateEmployee.js'
 import getSucesor from './adminController/getSucesor.js'
 import setSucesor from './adminController/setSucesor.js'
+import removeSucesor from './adminController/removeSucesor.js'
 import removeEmployee from './adminController/removeEmployee.js'
 
 const adminController = {
@@ -24,6 +25,7 @@ const adminController = {
   updateEmployee,
   getSucesor,
   setSucesor,
+  removeSucesor,
   removeEmployee
 }
 

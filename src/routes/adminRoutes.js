@@ -74,6 +74,12 @@ router.post(
   adminController.setSucesor // establecer Sucesor
 )
 router.delete(
+  '/remove-successor/:adminId',
+  verifyToken,
+  checkRole(['administrador']),
+  adminController.removeSucesor // quitar Sucesor
+)
+router.delete(
   '/remove-employee/:employeeId',
   verifyToken,
   checkRole(['administrador']),
