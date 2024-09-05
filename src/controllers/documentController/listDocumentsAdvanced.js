@@ -1,5 +1,6 @@
 // src/controllers/documentController/listDocumentsAdvanced.js
 import dbConfig from '../../config/db.js'
+import User from '../../models/User.js'
 
 async function getAdvancedSearch(req, res) {
   const {
@@ -147,6 +148,19 @@ async function getAdvancedSearch(req, res) {
       addFilter('n.negocio_juridico LIKE ?', `%${negocio_juridico}%`)
     if (tipo_documento) addFilter('d.tipo_documento = ?', tipo_documento)
 
+    // Verificar si el usuario tiene permiso para realizar la búsqueda avanzada
+    const user = await User.findById(req.user.id)
+    const allowedRoles = ['administrador', 'empleado', 'usuario']
+
+    if (!allowedRoles.includes(user.rol)) {
+      return res
+        .status(403)
+        .json({ message: 'No tienes permiso para realizar esta acción.' })
+    }
+    // Añadir filtro para usuarios no administradores
+    if (user.rol !== 'administrador') {
+      addFilter('d.es_publico = 1')
+    }
     // Obtener el conteo total
     const [countRows] = await connection.execute(countSql, values)
     const totalCount = countRows[0].total
