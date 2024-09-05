@@ -27,10 +27,10 @@ async function deleteDocument(req, res) {
     // Iniciar transacción
     await connection.beginTransaction()
 
-    // Marcar el documento como eliminado
+    // Marcar el documento como eliminado y guardar el usuario que lo eliminó
     await connection.execute(
-      'UPDATE documentos SET esta_eliminado = 1, fecha_marcado_eliminacion = NOW() WHERE id = ?',
-      [id]
+      'UPDATE documentos SET esta_eliminado = 1, fecha_marcado_eliminacion = NOW(), usuario_marcado_eliminacion = ? WHERE id = ?',
+      [req.user.id, id]
     )
 
     // Registrar la acción en la tabla de auditoría
