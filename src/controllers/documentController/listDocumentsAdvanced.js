@@ -28,13 +28,32 @@ async function getAdvancedSearch(req, res) {
     tipo_documento
   } = req.query
 
+  const page = parseInt(req.query.page) || 1
+  const pageSize = parseInt(req.query.pageSize) || 100
+
   let connection
-  const page = parseInt(req.query.page) || 1; // Página actual (por defecto 1)
-  const pageSize = parseInt(req.query.pageSize) || 100; // Resultados por página (por defecto 100)
+
   try {
     connection = await dbConfig.getConnection()
 
-    // Construir la consulta SQL
+    // Consulta SQL para el conteo total
+    let countSql = `
+      SELECT COUNT(*) AS total
+      FROM documentos AS d
+      LEFT JOIN documentos_departamentos AS dd ON d.id = dd.documento_id
+      LEFT JOIN departamentos AS dep ON dd.departamento_id = dep.id
+      LEFT JOIN documentos_personas AS dp ON d.id = dp.documento_id
+      LEFT JOIN personas_archivo AS pa ON dp.persona_id = pa.id
+      LEFT JOIN imagenes AS i ON d.id = i.documento_id
+      LEFT JOIN expedientes AS e ON d.expediente_id = e.id
+      LEFT JOIN legajos AS l ON e.legajo_id = l.id
+      LEFT JOIN mensura AS m ON d.id = m.id
+      LEFT JOIN notarial AS n ON d.id = n.id
+      WHERE
+      d.esta_eliminado = 0 AND 1=1
+    `
+
+    // Consulta SQL principal
     let sql = `
       SELECT
         d.id AS documento_id,
@@ -76,139 +95,74 @@ async function getAdvancedSearch(req, res) {
       d.esta_eliminado = 0 AND 1=1
     `
 
-    // Añadir filtros a la consulta SQL
-    if (legajo) {
-      sql += ' AND l.numero = ?'
-    }
-    if (legajoBis) {
-      sql += ' AND l.es_bis = ?'
-    }
-    if (expediente) {
-      sql += ' AND e.numero = ?'
-    }
-    if (expedienteBis) {
-      sql += ' AND e.es_bis = ?'
-    }
-    if (departamento) {
-      sql += ' AND dep.nombre = ? AND dep.es_actual = 1'
-    }
-    if (lugar) {
-      sql += ' AND m.lugar LIKE ?'
-    }
-    if (dia) {
-      sql += ' AND d.dia = ?'
-    }
-    if (anio) {
-      sql += ' AND d.anio = ?'
-    }
-    if (titular) {
-      sql += ' AND dp.rol = ? AND pa.nombre LIKE ?'
-    }
-    if (iniciador) {
-      sql += ' AND dp.rol = ? AND pa.nombre LIKE ?'
-    }
-    if (escribano) {
-      sql += ' AND dp.rol = ? AND pa.nombre LIKE ?'
-    }
-    if (emisor) {
-      sql += ' AND dp.rol = ? AND pa.nombre LIKE ?'
-    }
-    if (destinatario) {
-      sql += ' AND dp.rol = ? AND pa.nombre LIKE ?'
-    }
-    if (caratula) {
-      sql += ' AND d.caratula_asunto_extracto LIKE ?'
-    }
-    if (propiedad) {
-      sql += ' AND m.propiedad LIKE ?'
-    }
-    if (folios) {
-      sql += ' AND d.folios = ?'
-    }
-    if (registro) {
-      sql += ' AND n.registro = ?'
-    }
-    if (protocolo) {
-      sql += ' AND n.protocolo = ?'
-    }
-    if (mes_inicio) {
-      sql += ' AND n.mes_inicio = ?'
-    }
-    if (mes_fin) {
-      sql += ' AND n.mes_fin = ?'
-    }
-    if (escritura_nro) {
-      sql += ' AND n.escritura_nro = ?'
-    }
-    if (negocio_juridico) {
-      sql += ' AND n.negocio_juridico LIKE ?'
-    }
-    if (tipo_documento) {
-      sql += ' AND d.tipo_documento = ?'
-    }
-
-    // Ejecutar la consulta
     const values = []
-    if (legajo) values.push(legajo)
-    if (legajoBis) values.push(legajoBis)
-    if (expediente) values.push(expediente)
-    if (expedienteBis) values.push(expedienteBis)
-    if (departamento) values.push(departamento)
-    if (lugar) values.push(`%${lugar}%`)
-    if (dia) values.push(dia)
-    if (anio) values.push(anio)
-    if (titular) {
-      values.push('Titular', `%${titular}%`)
-    }
-    if (iniciador) {
-      values.push('Iniciador', `%${iniciador}%`)
-    }
-    if (escribano) {
-      values.push('Escribano', `%${escribano}%`)
-    }
-    if (emisor) {
-      values.push('Emisor', `%${emisor}%`)
-    }
-    if (destinatario) {
-      values.push('Destinatario', `%${destinatario}%`)
-    }
-    if (caratula) {
-      values.push(`%${caratula}%`)
-    }
-    if (propiedad) {
-      values.push(`%${propiedad}%`)
-    }
-    if (folios) {
-      values.push(folios)
-    }
-    if (registro) {
-      values.push(registro)
-    }
-    if (protocolo) {
-      values.push(protocolo)
-    }
-    if (mes_inicio) {
-      values.push(mes_inicio)
-    }
-    if (mes_fin) {
-      values.push(mes_fin)
-    }
-    if (escritura_nro) {
-      values.push(escritura_nro)
-    }
-    if (negocio_juridico) {
-      values.push(`%${negocio_juridico}%`)
-    }
-    if (tipo_documento) {
-      values.push(tipo_documento)
+
+    // Añadir filtros a ambas consultas
+    const addFilter = (condition, value) => {
+      sql += ` AND ${condition}`
+      countSql += ` AND ${condition}`
+      if (value !== undefined) {
+        values.push(value)
+      }
     }
 
+    if (legajo) addFilter('l.numero = ?', legajo)
+    if (legajoBis) addFilter('l.es_bis = ?', legajoBis)
+    if (expediente) addFilter('e.numero = ?', expediente)
+    if (expedienteBis) addFilter('e.es_bis = ?', expedienteBis)
+    if (departamento)
+      addFilter('dep.nombre = ? AND dep.es_actual = 1', departamento)
+    if (lugar) addFilter('m.lugar LIKE ?', `%${lugar}%`)
+    if (dia) addFilter('d.dia = ?', dia)
+    if (anio) addFilter('d.anio = ?', anio)
+    if (titular)
+      addFilter('dp.rol = ? AND pa.nombre LIKE ?', ['Titular', `%${titular}%`])
+    if (iniciador)
+      addFilter('dp.rol = ? AND pa.nombre LIKE ?', [
+        'Iniciador',
+        `%${iniciador}%`
+      ])
+    if (escribano)
+      addFilter('dp.rol = ? AND pa.nombre LIKE ?', [
+        'Escribano',
+        `%${escribano}%`
+      ])
+    if (emisor)
+      addFilter('dp.rol = ? AND pa.nombre LIKE ?', ['Emisor', `%${emisor}%`])
+    if (destinatario)
+      addFilter('dp.rol = ? AND pa.nombre LIKE ?', [
+        'Destinatario',
+        `%${destinatario}%`
+      ])
+    if (caratula)
+      addFilter('d.caratula_asunto_extracto LIKE ?', `%${caratula}%`)
+    if (propiedad) addFilter('m.propiedad LIKE ?', `%${propiedad}%`)
+    if (folios) addFilter('d.folios = ?', folios)
+    if (registro) addFilter('n.registro = ?', registro)
+    if (protocolo) addFilter('n.protocolo = ?', protocolo)
+    if (mes_inicio) addFilter('n.mes_inicio = ?', mes_inicio)
+    if (mes_fin) addFilter('n.mes_fin = ?', mes_fin)
+    if (escritura_nro) addFilter('n.escritura_nro = ?', escritura_nro)
+    if (negocio_juridico)
+      addFilter('n.negocio_juridico LIKE ?', `%${negocio_juridico}%`)
+    if (tipo_documento) addFilter('d.tipo_documento = ?', tipo_documento)
+
+    // Obtener el conteo total
+    const [countRows] = await connection.execute(countSql, values)
+    const totalCount = countRows[0].total
+
+    // Añadir paginación a la consulta principal
+    sql += ` LIMIT ${pageSize} OFFSET ${(page - 1) * pageSize}`
+
+    // Ejecutar la consulta principal
     const [rows] = await connection.execute(sql, values)
+
     res.status(200).json({
-      results: rows, // Devuelve los resultados
-      count: rows.length // Añade el conteo de resultados
+      results: rows,
+      totalCount,
+      page,
+      pageSize
     })
-    res.status(200).json(rows)
   } catch (error) {
     console.error(error)
     res.status(500).json({
