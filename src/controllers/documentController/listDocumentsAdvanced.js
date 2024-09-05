@@ -29,7 +29,8 @@ async function getAdvancedSearch(req, res) {
   } = req.query
 
   let connection
-
+  const page = parseInt(req.query.page) || 1; // Página actual (por defecto 1)
+  const pageSize = parseInt(req.query.pageSize) || 100; // Resultados por página (por defecto 100)
   try {
     connection = await dbConfig.getConnection()
 
@@ -50,7 +51,9 @@ async function getAdvancedSearch(req, res) {
         dep.nombre AS departamento_nombre,
         i.url AS imagen_url,
         l.numero AS legajo_numero,
+        l.es_bis AS legajo_es_bis,
         e.numero AS expediente_numero,
+        e.es_bis AS expediente_es_bis,
         m.lugar AS mensura_lugar,
         m.propiedad AS mensura_propiedad,
         n.registro AS notarial_registro,
@@ -69,7 +72,8 @@ async function getAdvancedSearch(req, res) {
       LEFT JOIN legajos AS l ON e.legajo_id = l.id
       LEFT JOIN mensura AS m ON d.id = m.id
       LEFT JOIN notarial AS n ON d.id = n.id
-      WHERE 1=1
+      WHERE
+      d.esta_eliminado = 0 AND 1=1
     `
 
     // Añadir filtros a la consulta SQL
@@ -200,7 +204,10 @@ async function getAdvancedSearch(req, res) {
     }
 
     const [rows] = await connection.execute(sql, values)
-
+    res.status(200).json({
+      results: rows, // Devuelve los resultados
+      count: rows.length // Añade el conteo de resultados
+    })
     res.status(200).json(rows)
   } catch (error) {
     console.error(error)

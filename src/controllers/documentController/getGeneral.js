@@ -3,6 +3,8 @@ import dbConfig from '../../config/db.js'
 
 async function getGeneral(req, res) {
   const searchTerm = req.query.search
+  const page = parseInt(req.query.page) || 1 // Página actual (por defecto 1)
+  const pageSize = parseInt(req.query.pageSize) || 100 // Número de resultados por página (por defecto 100)
 
   if (!searchTerm) {
     return res.status(400).json({ message: 'Término de búsqueda requerido' })
@@ -12,6 +14,39 @@ async function getGeneral(req, res) {
 
   try {
     connection = await dbConfig.getConnection()
+
+    // Consulta SQL para obtener el conteo total de resultados
+    const countSql = `
+      SELECT COUNT(*) AS total
+      FROM documentos AS d
+      LEFT JOIN documentos_departamentos AS dd ON d.id = dd.documento_id
+      LEFT JOIN departamentos AS dep ON dd.departamento_id = dep.id
+      LEFT JOIN documentos_personas AS dp ON d.id = dp.documento_id
+      LEFT JOIN personas_archivo AS pa ON dp.persona_id = pa.id
+      LEFT JOIN imagenes AS i ON d.id = i.documento_id
+      LEFT JOIN expedientes AS e ON d.expediente_id = e.id
+      LEFT JOIN legajos AS l ON e.legajo_id = l.id
+      LEFT JOIN mensura AS m ON d.id = m.id
+      LEFT JOIN notarial AS n ON d.id = n.id
+      WHERE
+        d.esta_eliminado = 0
+        AND (
+          d.caratula_asunto_extracto LIKE ? OR
+          d.tema LIKE ? OR
+          pa.nombre LIKE ? OR
+          dep.nombre LIKE ? OR
+          m.lugar LIKE ? OR
+          m.propiedad LIKE ? OR
+          n.registro LIKE ? OR
+          n.protocolo LIKE ?
+        )
+    `
+
+    const [countRows] = await connection.execute(
+      countSql,
+      Array(8).fill(`%${searchTerm}%`)
+    )
+    const totalCount = countRows[0].total
 
     // Consulta SQL con JOIN para las tablas especificadas
     const sql = `
@@ -30,7 +65,9 @@ async function getGeneral(req, res) {
         dep.nombre AS departamento_nombre,
         i.url AS imagen_url,
         l.numero AS legajo_numero,
+        l.es_bis AS legajo_es_bis,
         e.numero AS expediente_numero,
+        e.es_bis AS expediente_es_bis,
         m.lugar AS mensura_lugar,
         m.propiedad AS mensura_propiedad,
         n.registro AS notarial_registro,
@@ -46,14 +83,18 @@ async function getGeneral(req, res) {
       LEFT JOIN mensura AS m ON d.id = m.id
       LEFT JOIN notarial AS n ON d.id = n.id
       WHERE
-        d.caratula_asunto_extracto LIKE ? OR
-        d.tema LIKE ? OR
-        pa.nombre LIKE ? OR
-        dep.nombre LIKE ? OR
-        m.lugar LIKE ? OR
-        m.propiedad LIKE ? OR
-        n.registro LIKE ? OR
-        n.protocolo LIKE ?
+        d.esta_eliminado = 0
+        AND (
+          d.caratula_asunto_extracto LIKE ? OR
+          d.tema LIKE ? OR
+          pa.nombre LIKE ? OR
+          dep.nombre LIKE ? OR
+          m.lugar LIKE ? OR
+          m.propiedad LIKE ? OR
+          n.registro LIKE ? OR
+          n.protocolo LIKE ?
+        )
+      LIMIT ${pageSize} OFFSET ${(page - 1) * pageSize}
     `
 
     // Ejecutar la consulta
@@ -62,7 +103,12 @@ async function getGeneral(req, res) {
       Array(8).fill(`%${searchTerm}%`)
     )
 
-    res.status(200).json(rows)
+    res.status(200).json({
+      results: rows,
+      totalCount,
+      page,
+      pageSize
+    })
   } catch (error) {
     console.error(error)
     res.status(500).json({
