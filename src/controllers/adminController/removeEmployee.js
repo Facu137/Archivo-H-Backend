@@ -10,19 +10,33 @@ const removeEmployee = async (req, res) => {
 
   const connection = await db.getConnection()
   try {
-    // Verificar si el empleado existe, no está activo y no es sucesor
+    // Verificar si el empleado existe
     const [employee] = await connection.query(
-      `SELECT * 
-       FROM empleados e
-       LEFT JOIN administradores a ON e.persona_id = a.sucesor
-       WHERE e.persona_id = ? AND e.activo = 0 AND a.sucesor IS NULL`,
+      'SELECT * FROM empleados WHERE persona_id = ?',
       [employeeId]
     )
 
     if (!employee.length) {
-      return res.status(404).json({
+      return res.status(404).json({ message: 'Empleado no encontrado' })
+    }
+
+    // Verificar si el empleado es sucesor de algún administrador
+    const [sucesor] = await connection.query(
+      'SELECT 1 FROM administradores WHERE sucesor = ?',
+      [employeeId]
+    )
+
+    if (sucesor.length > 0) {
+      return res.status(400).json({
         message:
-          'Empleado no encontrado, está activo o es sucesor del administrador'
+          'No se puede eliminar a un empleado que es sucesor de un administrador.'
+      })
+    }
+
+    // Verificar si el empleado está activo
+    if (employee[0].activo) {
+      return res.status(400).json({
+        message: 'No se puede eliminar a un empleado que está activo.'
       })
     }
 

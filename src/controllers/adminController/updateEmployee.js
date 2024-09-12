@@ -3,7 +3,7 @@ import db from '../../config/db.js'
 
 const updateEmployee = async (req, res) => {
   const employeeId = req.params.employeeId
-  const updates = req.body // Recibe los cambios del frontend
+  const updates = req.body
 
   if (!employeeId) {
     return res.status(400).json({ message: 'Falta el ID del empleado' })
@@ -29,11 +29,25 @@ const updateEmployee = async (req, res) => {
 
   const connection = await db.getConnection()
   try {
+    // Verificar si el empleado es sucesor de algún administrador
+    const [sucesor] = await connection.query(
+      'SELECT 1 FROM administradores WHERE sucesor = ?',
+      [employeeId]
+    )
+
+    // Si el empleado es sucesor y se intenta desactivar, devolver un error
+    if (sucesor.length > 0 && updates.activo === false) {
+      return res.status(400).json({
+        message:
+          'No se puede desactivar a un empleado que es sucesor del administrador.'
+      })
+    }
+
     await connection.query(`UPDATE empleados SET ? WHERE persona_id = ?`, [
       updates,
       employeeId
     ])
-    res.status(200).json({ message: 'Empleado actualizado con exito' })
+    res.status(200).json({ message: 'Empleado actualizado con éxito' })
   } catch (error) {
     console.error('Error al actualizar empleado:', error)
     res.status(500).json({ message: 'Error interno del servidor' })
