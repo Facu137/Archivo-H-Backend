@@ -10,6 +10,8 @@ import fileRoutes from './routes/fileRoutes.js'
 import generalRoutes from './routes/general.js'
 import advancedRoutes from './routes/advancedRoutes.js'
 import deletedRoutes from './routes/deletedRoutes.js'
+import modifiedRoutes from './routes/modifiedRoutes.js'
+
 config() // Cargar variables de entorno
 
 const app = express()
@@ -34,6 +36,7 @@ app.use('/uploads', express.static(path.join(process.cwd(), 'uploads'))) // Ruta
 app.use('/api', generalRoutes)
 app.use('/api/documents', advancedRoutes)
 app.use('/api', deletedRoutes)
+app.use('/api', modifiedRoutes) // Registrar la ruta para documentos modificados
 
 // Iniciar servidor
 app.listen(port, () => {

@@ -4,7 +4,7 @@ import getDeletedDocuments from '../controllers/documentController/getDeletedFil
 import deleteDocument from '../controllers/documentController/deleteDocument.js'
 import { verifyToken, checkRole } from '../middlewares/authMiddleware.js'
 import restoreDeletedFiles from '../controllers/documentController/restoreDeletedFiles.js'
-
+import deleteDocumentPermanently from '../controllers/documentController/deleteDocumentPermanently.js'
 const router = express.Router()
 
 // Ruta para obtener documentos eliminados (solo para administradores y empleados)
@@ -13,6 +13,12 @@ router.get(
   verifyToken,
   checkRole(['administrador', 'empleado']),
   getDeletedDocuments
+)
+router.delete(
+  '/documents/:documentoId/permanente',
+  verifyToken,
+  checkRole(['administrador']),
+  deleteDocumentPermanently
 )
 
 // Ruta para eliminar documentos (ya tiene el middleware verifyToken)
