@@ -71,12 +71,25 @@ export const uploadFileGeneral = async (req, res, next) => {
         )
         const documentoId = documentoResult.insertId
 
-        // Insertar o obtener persona
-        const [personaResult] = await connection.query(
-          'INSERT INTO personas_archivo (nombre, tipo) VALUES (?, ?) ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id)',
+        // Buscar persona existente
+        const [existingPersona] = await connection.query(
+          'SELECT id FROM personas_archivo WHERE nombre = ? AND tipo = ?',
           [personaNombre, personaTipo]
         )
-        const personaId = personaResult.insertId
+
+        let personaId
+
+        if (existingPersona.length > 0) {
+          // Persona ya existe
+          personaId = existingPersona[0].id
+        } else {
+          // Insertar nueva persona
+          const [personaResult] = await connection.query(
+            'INSERT INTO personas_archivo (nombre, tipo) VALUES (?, ?)',
+            [personaNombre, personaTipo]
+          )
+          personaId = personaResult.insertId
+        }
 
         // Relacionar persona con documento
         await connection.query(

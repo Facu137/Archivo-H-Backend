@@ -1,22 +1,30 @@
 // src/controllers/documentController/getGeneral.js
 import dbConfig from '../../config/db.js'
+import User from '../../models/User.js'
+import jwt from 'jsonwebtoken'
 
 async function getGeneral(req, res) {
   const searchTerm = req.query.search
-  const page = parseInt(req.query.page) || 1 // Página actual (por defecto 1)
-  const pageSize = parseInt(req.query.pageSize) || 100 // Número de resultados por página (por defecto 100)
+  const page = parseInt(req.query.page) || 1
+  const pageSize = parseInt(req.query.pageSize) || 100
 
   if (!searchTerm) {
     return res.status(400).json({ message: 'Término de búsqueda requerido' })
   }
 
   let connection
+  let user = null
 
   try {
-    connection = await dbConfig.getConnection()
+    // Intenta verificar el token si está presente
+    const token =
+      req.headers.authorization?.split(' ')[1] || req.cookies.refreshToken
+    if (token) {
+      user = jwt.verify(token, process.env.JWT_ACCESS_SECRET)
+    }
 
     // Consulta SQL para obtener el conteo total de resultados
-    const countSql = `
+    let countSql = `
       SELECT COUNT(*) AS total
       FROM documentos AS d
       LEFT JOIN documentos_departamentos AS dd ON d.id = dd.documento_id
@@ -42,14 +50,8 @@ async function getGeneral(req, res) {
         )
     `
 
-    const [countRows] = await connection.execute(
-      countSql,
-      Array(8).fill(`%${searchTerm}%`)
-    )
-    const totalCount = countRows[0].total
-
     // Consulta SQL con JOIN para las tablas especificadas
-    const sql = `
+    let sql = `
       SELECT
         d.id AS documento_id,
         d.tipo_documento,
@@ -94,10 +96,31 @@ async function getGeneral(req, res) {
           n.registro LIKE ? OR
           n.protocolo LIKE ?
         )
-      LIMIT ${pageSize} OFFSET ${(page - 1) * pageSize}
     `
 
-    // Ejecutar la consulta
+    // Modifica la condición del WHERE para incluir la verificación del token
+    if (
+      !user ||
+      (user.rol !== 'administrador' &&
+        !(user.rol === 'empleado' && user.permiso_ver_archivos_privados))
+    ) {
+      // Si no hay token o el usuario no tiene permisos, solo mostrar documentos públicos
+      sql += ' AND d.es_publico = 1'
+      countSql += ' AND d.es_publico = 1'
+    }
+
+    sql += ` LIMIT ${pageSize} OFFSET ${(page - 1) * pageSize}`
+
+    connection = await dbConfig.getConnection()
+
+    // Ejecutar la consulta de conteo
+    const [countRows] = await connection.execute(
+      countSql,
+      Array(8).fill(`%${searchTerm}%`)
+    )
+    const totalCount = countRows[0].total
+
+    // Ejecutar la consulta principal
     const [rows] = await connection.execute(
       sql,
       Array(8).fill(`%${searchTerm}%`)
@@ -111,6 +134,12 @@ async function getGeneral(req, res) {
     })
   } catch (error) {
     console.error(error)
+
+    // Si hay un error de token, devolver un error 401 (Unauthorized)
+    if (error.name === 'JsonWebTokenError') {
+      return res.status(401).json({ message: 'Token inválido' })
+    }
+
     res.status(500).json({
       message: 'Error al obtener datos generales',
       error: error.message

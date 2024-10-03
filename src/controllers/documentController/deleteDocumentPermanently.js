@@ -1,10 +1,11 @@
 // src/controllers/documentController/deleteDocumentPermanently.js
 import dbConfig from '../../config/db.js'
 import User from '../../models/User.js'
+import bcrypt from 'bcrypt' // Importa bcrypt para comparar contraseñas
 
 async function deleteDocumentPermanently(req, res) {
   const { documentoId } = req.params
-  const { claveEliminacion } = req.body // Recibir la clave de eliminación en el body de la solicitud
+  const { contraseniaAdmin } = req.body // Recibir la clave de eliminación en el body de la solicitud
 
   let connection
 
@@ -18,12 +19,15 @@ async function deleteDocumentPermanently(req, res) {
       })
     }
 
-    // Verificar la clave de eliminación (reemplázala con tu lógica de verificación)
-    if (claveEliminacion !== process.env.CLAVE_ELIMINACION_PERMANENTE) {
-      // Reemplaza process.env.CLAVE_ELIMINACION_PERMANENTE con tu variable de entorno o la forma en que almacenas la clave
+    // Verificar la contraseña del administrador
+    const isValidPassword = await bcrypt.compare(
+      contraseniaAdmin,
+      user.contrasena
+    ) // Compara la contraseña proporcionada con la contraseña almacenada del administrador
+    if (!isValidPassword) {
       return res
         .status(401)
-        .json({ message: 'Clave de eliminación incorrecta.' })
+        .json({ message: 'Contraseña de administrador incorrecta.' })
     }
 
     connection = await dbConfig.getConnection()
