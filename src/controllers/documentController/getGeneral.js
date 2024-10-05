@@ -1,6 +1,5 @@
 // src/controllers/documentController/getGeneral.js
 import dbConfig from '../../config/db.js'
-import User from '../../models/User.js'
 import jwt from 'jsonwebtoken'
 
 async function getGeneral(req, res) {
@@ -104,7 +103,6 @@ async function getGeneral(req, res) {
       (user.rol !== 'administrador' &&
         !(user.rol === 'empleado' && user.permiso_ver_archivos_privados))
     ) {
-      // Si no hay token o el usuario no tiene permisos, solo mostrar documentos públicos
       sql += ' AND d.es_publico = 1'
       countSql += ' AND d.es_publico = 1'
     }
