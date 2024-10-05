@@ -1,6 +1,7 @@
 // src/controllers/documentController/listDocumentsAdvanced.js
 import dbConfig from '../../config/db.js'
 import User from '../../models/User.js'
+import jwt from 'jsonwebtoken'
 
 async function getAdvancedSearch(req, res) {
   const {
@@ -33,9 +34,15 @@ async function getAdvancedSearch(req, res) {
   const pageSize = parseInt(req.query.pageSize) || 100
 
   let connection
+  let user = null
 
   try {
-    connection = await dbConfig.getConnection()
+    // Intenta verificar el token si está presente
+    const token =
+      req.headers.authorization?.split(' ')[1] || req.cookies.refreshToken
+    if (token) {
+      user = jwt.verify(token, process.env.JWT_ACCESS_SECRET)
+    }
 
     // Consulta SQL para el conteo total
     let countSql = `
@@ -148,6 +155,19 @@ async function getAdvancedSearch(req, res) {
       addFilter('n.negocio_juridico LIKE ?', `%${negocio_juridico}%`)
     if (tipo_documento) addFilter('d.tipo_documento = ?', tipo_documento)
 
+    // Modifica la condición del WHERE para incluir la verificación del token
+    if (
+      !user ||
+      (user.rol !== 'administrador' &&
+        !(user.rol === 'empleado' && user.permiso_ver_archivos_privados))
+    ) {
+      // Si no hay token o el usuario no tiene permisos, solo mostrar documentos públicos
+      sql += ' AND d.es_publico = 1'
+      countSql += ' AND d.es_publico = 1'
+    }
+
+    connection = await dbConfig.getConnection()
+
     // Obtener el conteo total
     const [countRows] = await connection.execute(countSql, values)
     const totalCount = countRows[0].total
@@ -166,6 +186,12 @@ async function getAdvancedSearch(req, res) {
     })
   } catch (error) {
     console.error(error)
+
+    // Si hay un error de token, devolver un error 401 (Unauthorized)
+    if (error.name === 'JsonWebTokenError') {
+      return res.status(401).json({ message: 'Token inválido' })
+    }
+
     res.status(500).json({
       message: 'Error al obtener datos de búsqueda avanzada',
       error: error.message
