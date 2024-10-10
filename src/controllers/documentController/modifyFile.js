@@ -1,6 +1,6 @@
 // src/utils/modifyFile.js
 import dbConfig from '../../config/db.js'
-import User from '../models/User.js'
+import User from '../../models/User.js'
 import auditChanges from './auditChanges.js'
 
 async function modifyRecord(tabla, id, campos, req, res, tipoDocumento = null) {
