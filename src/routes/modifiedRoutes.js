@@ -7,6 +7,7 @@ import {
   checkPermission
 } from '../middlewares/authMiddleware.js'
 import modifyRecord from '../controllers/documentController/modifyFile.js'
+import restoreModifiedFiles from '../controllers/documentController/restoreModifiedFiles.js'
 
 const router = express.Router()
 
@@ -16,6 +17,8 @@ router.get(
   checkRole(['administrador', 'empleado']),
   getModifiedDocuments
 )
+
+router.put('/restore/:tabla/:id/:campo', restoreModifiedFiles)
 
 router.put(
   '/:id',
