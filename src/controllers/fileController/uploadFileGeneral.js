@@ -99,16 +99,17 @@ export const uploadFileGeneral = async (req, res, next) => {
 
         // Insertar la imagen asociada al documento
         if (req.file) {
-          await connection.query(
-            'INSERT INTO imagenes (documento_id, url, tipo_imagen) VALUES (?, ?, ?)',
-            [
-              documentoId,
-              req.file.filename,
-              path.extname(req.file.originalname).slice(1)
-            ]
-          )
+          for (const file of req.files) {
+            await connection.query(
+              'INSERT INTO imagenes (documento_id, url, tipo_imagen) VALUES (?, ?, ?)',
+              [
+                documentoId,
+                file.filename, // Nombre del archivo en la carpeta 'uploads'
+                path.extname(file.originalname).slice(1) // Extensión del archivo
+              ]
+            )
+          }
         }
-
         await connection.commit()
 
         // Pasar la conexión y los IDs a la siguiente función
