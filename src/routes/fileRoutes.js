@@ -15,14 +15,14 @@ router.post(
   '/documents/upload/general',
   verifyToken, // Verificar el token
   checkRole(['empleado', 'administrador']), // Verificar el rol
-  upload.single('archivo'),
+  upload.array('archivo'),
   uploadFileGeneral
 )
 router.post(
   '/documents/upload/notarial',
   verifyToken, // Verificar el token
   checkRole(['empleado', 'administrador']), // Verificar el rol
-  upload.single('archivo'),
+  upload.array('archivo'),
   uploadFileGeneral,
   uploadFileNotarial
 )
@@ -30,7 +30,7 @@ router.post(
   '/documents/upload/mensura',
   verifyToken, // Verificar el token
   checkRole(['empleado', 'administrador']), // Verificar el rol
-  upload.single('archivo'),
+  upload.array('archivo'),
   uploadFileGeneral,
   uploadFileMensura
 )
