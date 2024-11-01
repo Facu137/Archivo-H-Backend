@@ -106,12 +106,11 @@ async function getAdvancedSearch(req, res) {
     const values = []
 
     // Añadir filtros a ambas consultas
-    const addFilter = (condition, value) => {
+    const addFilter = (condition, ...filterValues) => {
+      // usa rest parameters
       sql += ` AND ${condition}`
       countSql += ` AND ${condition}`
-      if (value !== undefined) {
-        values.push(value)
-      }
+      values.push(...filterValues) // spread operator para agregar los valores
     }
 
     if (legajo) addFilter('l.numero = ?', legajo)
@@ -124,24 +123,27 @@ async function getAdvancedSearch(req, res) {
     if (dia) addFilter('d.dia = ?', dia)
     if (anio) addFilter('d.anio = ?', anio)
     if (titular)
-      addFilter('dp.rol = ? AND pa.nombre LIKE ?', ['Titular', `%${titular}%`])
+      addFilter('dp.rol = ? AND pa.nombre LIKE ?', 'Titular', `%${titular}%`)
     if (iniciador)
-      addFilter('dp.rol = ? AND pa.nombre LIKE ?', [
+      addFilter(
+        'dp.rol = ? AND pa.nombre LIKE ?',
         'Iniciador',
         `%${iniciador}%`
-      ])
+      )
     if (escribano)
-      addFilter('dp.rol = ? AND pa.nombre LIKE ?', [
+      addFilter(
+        'dp.rol = ? AND pa.nombre LIKE ?',
         'Escribano',
         `%${escribano}%`
-      ])
+      )
     if (emisor)
-      addFilter('dp.rol = ? AND pa.nombre LIKE ?', ['Emisor', `%${emisor}%`])
+      addFilter('dp.rol = ? AND pa.nombre LIKE ?', 'Emisor', `%${emisor}%`)
     if (destinatario)
-      addFilter('dp.rol = ? AND pa.nombre LIKE ?', [
+      addFilter(
+        'dp.rol = ? AND pa.nombre LIKE ?',
         'Destinatario',
         `%${destinatario}%`
-      ])
+      )
     if (caratula)
       addFilter('d.caratula_asunto_extracto LIKE ?', `%${caratula}%`)
     if (propiedad) addFilter('m.propiedad LIKE ?', `%${propiedad}%`)
