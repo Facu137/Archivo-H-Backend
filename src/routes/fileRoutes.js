@@ -1,5 +1,5 @@
 // src/routes/fileRoutes.js
-import { Router } from 'express'
+import express from 'express'
 import {
   uploadFileGeneral,
   uploadFileMensura,
@@ -8,7 +8,9 @@ import {
 import upload from '../middlewares/uploadMiddleware.js'
 import { verifyToken, checkRole } from '../middlewares/authMiddleware.js' // Importar los middlewares
 
-const router = Router()
+const router = express.Router()
+
+router.use(express.urlencoded({ extended: true })) // Agrega este middleware
 
 // Rutas para subir archivos (con middleware de autenticación)
 router.post(

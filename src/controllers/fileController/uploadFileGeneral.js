@@ -98,17 +98,21 @@ export const uploadFileGeneral = async (req, res, next) => {
         )
 
         // Insertar la imagen asociada al documento
-        if (req.file) {
+        if (req.files && req.files.length > 0) {
+          // Verifica si se subieron archivos
           for (const file of req.files) {
             await connection.query(
               'INSERT INTO imagenes (documento_id, url, tipo_imagen) VALUES (?, ?, ?)',
               [
                 documentoId,
-                file.filename, // Nombre del archivo en la carpeta 'uploads'
-                path.extname(file.originalname).slice(1) // Extensión del archivo
+                file.filename,
+                path.extname(file.originalname).slice(1)
               ]
             )
           }
+        } else {
+          console.warn('No se subieron imágenes para este documento.')
+          // Puedes decidir si lanzar un error o simplemente continuar sin imágenes.
         }
         await connection.commit()
 

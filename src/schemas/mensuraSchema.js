@@ -51,8 +51,12 @@ const baseSchema = z.object({
   ),
 
   // Campos específicos de Mensura
-  lugar: z.string().min(1, 'El lugar es requerido'),
-  propiedad: z.string().min(1, 'La propiedad es requerida')
+  lugar: z.string().optional(), // O define un valor por defecto si es necesario
+  propiedad: z.string().optional(), // O define un valor por defecto si es necesario
+  departamentoId: z.number().optional(), // Asegúrate de que sea opcional o tenga un valor por defecto
+  departamentoNombre: z.string().optional(),
+  departamentoEsActual: z.boolean().optional(),
+  file: z.any().optional() // Asegúrate de que el archivo sea opcional, ya que se maneja con multer
 })
 
 // El fileSchema no necesita cambios
