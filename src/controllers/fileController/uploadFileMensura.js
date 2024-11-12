@@ -3,6 +3,7 @@ import { validateMensuraUpload } from '../../schemas/mensuraSchema.js'
 import { verifyToken, checkRole } from '../../middlewares/authMiddleware.js'
 
 export const uploadFileMensura = async (req, res) => {
+  console.log('req.body en uploadFileMensura:', req.body) // Agrega esta línea
   // Verificar token y rol antes de procesar la solicitud
   verifyToken(req, res, () => {
     checkRole(['empleado', 'administrador'])(req, res, async () => {
