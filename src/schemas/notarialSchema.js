@@ -56,7 +56,7 @@ const baseSchema = z.object({
 // El fileSchema no necesita cambios
 
 export const notarialSchema = baseSchema.extend({
-  file: fileSchema
+  files: z.array(z.any()).optional()
 })
 
 export const validateNotarialUpload = (data) => {
