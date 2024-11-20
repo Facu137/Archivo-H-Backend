@@ -55,16 +55,47 @@ const baseSchema = z.object({
   propiedad: z.string().optional(), // O define un valor por defecto si es necesario
   departamentoId: z.number().optional(), // Asegúrate de que sea opcional o tenga un valor por defecto
   departamentoNombre: z.string().optional(),
-  departamentoEsActual: z.boolean().optional(),
+  departamentoEsActual: z.preprocess(
+    (val) => val === 'true' || val === true || val === 1,
+    z.boolean()
+  ),
   file: z.any().optional() // Asegúrate de que el archivo sea opcional, ya que se maneja con multer
 })
 
 // El fileSchema no necesita cambios
 
-export const mensuraSchema = baseSchema.extend({
-  file: fileSchema
+export const mensuraSchema = z.object({
+  // Datos del documento (NO dentro de "files")
+  legajoNumero: z.string().min(1),
+  legajoEsBis: z.preprocess(
+    (val) => val === 'true' || val === true || val === 1,
+    z.boolean()
+  ),
+  expedienteNumero: z.string().min(1),
+  expedienteEsBis: z.preprocess(
+    (val) => val === 'true' || val === true || val === 1,
+    z.boolean()
+  ),
+  tipoDocumento: z.literal('Mensura'),
+  anio: z.coerce.number().int().max(new Date().getFullYear()),
+  // ... otros campos del documento
+  personaNombre: z.string().min(1),
+  personaTipo: z.enum(['Persona Física', 'Persona Jurídica']),
+  personaRol: z.enum([
+    'Iniciador',
+    'Titular',
+    'Escribano',
+    'Emisor',
+    'Destinatario'
+  ]),
+  lugar: z.string().optional(),
+  propiedad: z.string().optional(),
+
+  // Array de archivos (opcional, para las imágenes)
+  files: z.array(z.any()).optional() // O usa fileSchema si necesitas validarlos individualmente
 })
 
 export const validateMensuraUpload = (data) => {
+  console.log('Datos recibidos por validateMensuraUpload:', data) // Mantén esta línea para debugging
   return mensuraSchema.parse(data)
 }

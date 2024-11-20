@@ -1,6 +1,7 @@
 // src/controllers/fileController/uploadFileMensura.js
 import { validateMensuraUpload } from '../../schemas/mensuraSchema.js'
 import { verifyToken, checkRole } from '../../middlewares/authMiddleware.js'
+import path from 'path'
 
 export const uploadFileMensura = async (req, res) => {
   console.log('req.body en uploadFileMensura:', req.body) // Agrega esta línea
@@ -14,9 +15,8 @@ export const uploadFileMensura = async (req, res) => {
         // Validar los datos de entrada específicos de mensura
         const validatedData = validateMensuraUpload({
           ...req.body,
-          file: req.file
+          files: req.files
         })
-
         // Insertar o actualizar mensura
         const {
           lugar,
@@ -53,7 +53,22 @@ export const uploadFileMensura = async (req, res) => {
             'No se proporcionó información del departamento para la mensura'
           )
         }
-
+        if (req.files && req.files.length > 0) {
+          for (const file of req.files) {
+            // Insertar cada archivo en la tabla 'imagenes'
+            await connection.query(
+              'INSERT INTO imagenes (documento_id, url, tipo_imagen) VALUES (?, ?, ?)',
+              [
+                documentoId,
+                file.filename, // Nombre del archivo en el servidor
+                path.extname(file.originalname).slice(1) // Extensión del archivo
+              ]
+            )
+          }
+          console.log('Archivos insertados en la tabla Imagenes')
+        } else {
+          console.warn('No se subieron imágenes para este documento.')
+        }
         await connection.commit()
 
         res.json({
@@ -76,6 +91,8 @@ export const uploadFileMensura = async (req, res) => {
         res
           .status(500)
           .json({ message: 'Error al procesar el documento de mensura' })
+      } finally {
+        if (connection) connection.release()
       }
     })
   })
