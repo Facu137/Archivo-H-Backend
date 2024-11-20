@@ -11,7 +11,7 @@ export const uploadFileNotarial = async (req, res, next) => {
         // Validar los datos de entrada específicos de documentos notariales
         const validatedData = validateNotarialUpload({
           ...req.body,
-          file: req.file
+          files: req.files
         })
 
         // Extraer los datos específicos de documentos notariales
