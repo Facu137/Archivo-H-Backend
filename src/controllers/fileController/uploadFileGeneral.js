@@ -123,14 +123,6 @@ export const uploadFileGeneral = async (req, res, next) => {
         req.legajoId = legajoId
         req.personaId = personaId
 
-        res.status(201).json({
-          message: 'Documento subido y registrado con éxito',
-          documentoId,
-          expedienteId,
-          legajoId,
-          personaId
-        })
-
         next()
       } catch (error) {
         await connection.rollback()
