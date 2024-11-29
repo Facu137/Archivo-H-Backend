@@ -20,8 +20,10 @@ const port = process.env.PORT || 3000
 // Middlewares
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL,
-    credentials: true
+    origin: 'http://localhost:5173', // Ajusta esto a la URL de tu frontend
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
   })
 ) /* Permite que el front-end y el back-end puedan interactuar.
 CORS es un mecanismo que permite que un sitio web acceda a recursos de otro sitio web. */

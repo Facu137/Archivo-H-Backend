@@ -115,15 +115,11 @@ export const uploadFileGeneral = async (req, res, next) => {
           // Puedes decidir si lanzar un error o simplemente continuar sin imágenes.
         }
         await connection.commit()
-
-        // Pasar la conexión y los IDs a la siguiente función
-        req.connection = connection
-        req.documentoId = documentoId
-        req.expedienteId = expedienteId
-        req.legajoId = legajoId
-        req.personaId = personaId
-
-        next()
+        res.status(200).json({
+          success: true,
+          message: 'Documento subido exitosamente',
+          documentoId
+        })
       } catch (error) {
         await connection.rollback()
 
