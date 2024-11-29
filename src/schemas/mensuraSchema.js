@@ -21,7 +21,8 @@ export const mensuraSchema = z.object({
   ]),
   lugar: z.string().optional(),
   propiedad: z.string().optional(),
-  departamentoNombre: z.string().optional(),
+  departamentoNombreActual: z.string().optional(),
+  departamentoNombreAntiguo: z.string().optional(),
   departamentoEsActual: z.preprocess(
     (val) => val === 'true' || val === true || val === 1,
     z.boolean()

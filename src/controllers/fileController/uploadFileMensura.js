@@ -17,13 +17,13 @@ export const uploadFileMensura = async (req, res) => {
           ...req.body,
           files: req.files
         })
+
         // Insertar o actualizar mensura
         const {
           lugar,
           propiedad,
-          departamentoId,
-          departamentoNombre,
-          departamentoEsActual
+          departamentoNombreActual,
+          departamentoNombreAntiguo
         } = validatedData
 
         await connection.query(
@@ -32,27 +32,38 @@ export const uploadFileMensura = async (req, res) => {
         )
         console.log('Datos insertados en la tabla Mensura')
 
-        // Insertar o actualizar departamento y crear relación
-        if (departamentoNombre !== undefined) {
-          let deptoId
-          // Insertar o actualizar el departamento
-          const [deptoResult] = await connection.query(
-            'INSERT INTO departamentos (id, nombre, es_actual) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE nombre = VALUES(nombre), es_actual = VALUES(es_actual)',
-            [departamentoId || null, departamentoNombre, departamentoEsActual]
+        // Insertar departamento actual y crear relación
+        if (departamentoNombreActual) {
+          const [deptoActualResult] = await connection.query(
+            'INSERT INTO departamentos (nombre, es_actual) VALUES (?, true)',
+            [departamentoNombreActual]
           )
-          // eslint-disable-next-line prefer-const
-          deptoId = departamentoId || deptoResult.insertId
-          // Crear relación documento-departamento
+          const deptoActualId = deptoActualResult.insertId
+
+          // Crear relación documento-departamento actual
           await connection.query(
             'INSERT INTO documentos_departamentos (documento_id, departamento_id) VALUES (?, ?)',
-            [documentoId, deptoId]
+            [documentoId, deptoActualId]
           )
-          console.log('Departamento insertado/actualizado y relación creada')
-        } else {
-          console.log(
-            'No se proporcionó información del departamento para la mensura'
-          )
+          console.log('Departamento actual insertado y relación creada')
         }
+
+        // Insertar departamento antiguo y crear relación
+        if (departamentoNombreAntiguo) {
+          const [deptoAntiguoResult] = await connection.query(
+            'INSERT INTO departamentos (nombre, es_actual) VALUES (?, false)',
+            [departamentoNombreAntiguo]
+          )
+          const deptoAntiguoId = deptoAntiguoResult.insertId
+
+          // Crear relación documento-departamento antiguo
+          await connection.query(
+            'INSERT INTO documentos_departamentos (documento_id, departamento_id) VALUES (?, ?)',
+            [documentoId, deptoAntiguoId]
+          )
+          console.log('Departamento antiguo insertado y relación creada')
+        }
+
         if (req.files && req.files.length > 0) {
           for (const file of req.files) {
             // Insertar cada archivo en la tabla 'imagenes'
@@ -69,6 +80,7 @@ export const uploadFileMensura = async (req, res) => {
         } else {
           console.warn('No se subieron imágenes para este documento.')
         }
+
         await connection.commit()
 
         res.json({

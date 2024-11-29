@@ -37,6 +37,4 @@ router.post(
   uploadFileMensura
 )
 
-// ... otras rutas
-
 export default router
