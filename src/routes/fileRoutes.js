@@ -14,14 +14,14 @@ router.use(express.urlencoded({ extended: true })) // Agrega este middleware
 
 // Rutas para subir archivos (con middleware de autenticación)
 router.post(
-  '/documents/upload/general',
+  '/upload/general',
   verifyToken, // Verificar el token
   checkRole(['empleado', 'administrador']), // Verificar el rol
   upload.array('archivo'),
   uploadFileGeneral
 )
 router.post(
-  '/documents/upload/notarial',
+  '/upload/notarial',
   verifyToken, // Verificar el token
   checkRole(['empleado', 'administrador']), // Verificar el rol
   upload.array('archivo'),
@@ -29,7 +29,7 @@ router.post(
   uploadFileNotarial
 )
 router.post(
-  '/documents/upload/mensura',
+  '/upload/mensura',
   verifyToken, // Verificar el token
   checkRole(['empleado', 'administrador']), // Verificar el rol
   upload.array('archivo'),
