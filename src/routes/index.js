@@ -1,7 +1,6 @@
 // src/routes/index.js
 import express from 'express'
 import fileRoutes from './fileRoutes.js'
-import adminRoutes from './adminRoutes.js'
 import deletedRoutes from './deletedRoutes.js'
 import modifiedRoutes from './modifiedRoutes.js'
 import advancedRoutes from './advancedRoutes.js'
@@ -23,7 +22,6 @@ router.use(verifyToken, updateRefreshToken)
 
 // Rutas protegidas
 router.use('/files', fileRoutes)
-router.use('/admin', adminRoutes)
 router.use('/deleted', deletedRoutes)
 router.use('/modified', modifiedRoutes)
 router.use('/advanced', advancedRoutes)
