@@ -5,6 +5,7 @@ import path from 'path'
 import { config } from 'dotenv'
 import cookieParser from 'cookie-parser'
 import routes from './routes/index.js'
+import authRoutes from './routes/authRoutes.js'
 
 config() // Cargar variables de entorno
 
@@ -26,7 +27,10 @@ app.use(cookieParser())
 // Servir archivos estáticos
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')))
 
-// Usar el router principal
+// Rutas de autenticación (sin prefijo /api)
+app.use('/auth', authRoutes)
+
+// Resto de rutas con prefijo /api
 app.use('/api', routes)
 
 // Ruta principal
