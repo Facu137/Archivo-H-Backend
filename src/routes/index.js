@@ -22,7 +22,7 @@ router.use('/documents', advancedRoutes)
 router.use(verifyToken, updateRefreshToken)
 
 // Rutas protegidas
-router.use('/files', fileRoutes)
+router.use('/documents', fileRoutes)
 router.use('/deleted', deletedRoutes)
 router.use('/modified', modifiedRoutes)
 
