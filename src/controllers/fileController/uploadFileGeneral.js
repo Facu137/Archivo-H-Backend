@@ -5,12 +5,12 @@ import { validateFileUpload } from '../../schemas/fileSchema.js'
 import { verifyToken, checkRole } from '../../middlewares/authMiddleware.js'
 
 export const uploadFileGeneral = async (req, res, next) => {
-  // Verificar token y rol antes de procesar la solicitud
-  verifyToken(req, res, () => {
-    checkRole(['empleado', 'administrador'])(req, res, async () => {
-      const connection = await pool.getConnection()
+  const connection = await pool.getConnection()
 
-      try {
+  try {
+    // Verificar token y rol antes de procesar la solicitud
+    verifyToken(req, res, () => {
+      checkRole(['empleado', 'administrador'])(req, res, async () => {
         // Validar los datos de entrada
         const validatedData = validateFileUpload({
           ...req.body,
@@ -120,23 +120,23 @@ export const uploadFileGeneral = async (req, res, next) => {
           message: 'Documento subido exitosamente',
           documentoId
         })
-      } catch (error) {
-        await connection.rollback()
-
-        if (error.name === 'ZodError') {
-          return res.status(400).json({
-            message: 'Error de validación',
-            errors: error.errors
-          })
-        }
-
-        console.error('Error al guardar en la base de datos:', error)
-        res.status(500).json({
-          message: 'Error al guardar el documento en la base de datos'
-        })
-      } finally {
-        connection.release()
-      }
+      })
     })
-  })
+  } catch (error) {
+    await connection.rollback()
+
+    if (error.name === 'ZodError') {
+      return res.status(400).json({
+        message: 'Error de validación',
+        errors: error.errors
+      })
+    }
+
+    console.error('Error al guardar en la base de datos:', error)
+    res.status(500).json({
+      message: 'Error al guardar el documento en la base de datos'
+    })
+  } finally {
+    connection.release()
+  }
 }
