@@ -4,7 +4,7 @@ import fileRoutes from './fileRoutes.js'
 import deletedRoutes from './deletedRoutes.js'
 import modifiedRoutes from './modifiedRoutes.js'
 import advancedRoutes from './advancedRoutes.js'
-import generalRoutes from './general.js'
+import generalRoutes from './generalRoutes.js'
 import updateRefreshToken from '../middlewares/updateRefreshToken.js'
 import { verifyToken } from '../middlewares/authMiddleware.js'
 import healthCheck from '../controllers/healthCheck.js'
@@ -16,6 +16,7 @@ router.get('/health-check', healthCheck)
 
 // Rutas públicas (no requieren autenticación)
 router.use('/general', generalRoutes)
+router.use('/documents', advancedRoutes)
 
 // Middleware para actualizar el refresh token en todas las rutas protegidas
 router.use(verifyToken, updateRefreshToken)
@@ -24,6 +25,5 @@ router.use(verifyToken, updateRefreshToken)
 router.use('/files', fileRoutes)
 router.use('/deleted', deletedRoutes)
 router.use('/modified', modifiedRoutes)
-router.use('/advanced', advancedRoutes)
 
 export default router
