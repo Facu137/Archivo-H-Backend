@@ -24,8 +24,8 @@ export const fileSchema = z.object({
     'Tipo de documento no válido'
   ),
   anio: z.coerce.number().int().max(new Date().getFullYear()),
-  mes: z.coerce.number().int().min(1).max(12).optional(),
-  dia: z.coerce.number().int().min(1).max(31).optional(),
+  mes: z.coerce.number().int().min().max(12).optional(),
+  dia: z.coerce.number().int().min().max(31).optional(),
   caratulaAsuntoExtracto: z
     .string()
     .min(1, 'La carátula/asunto/extracto es requerido'),
