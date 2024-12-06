@@ -4,13 +4,13 @@ import path from 'path'
 import { validateFileUpload } from '../../schemas/fileSchema.js'
 import { verifyToken, checkRole } from '../../middlewares/authMiddleware.js'
 
-export const uploadFileGeneral = async (req, res, next) => {
-  const connection = await pool.getConnection()
+export const uploadFileGeneral = async (req, res) => {
+  // Verificar token y rol antes de procesar la solicitud
+  verifyToken(req, res, () => {
+    checkRole(['empleado', 'administrador'])(req, res, async () => {
+      const connection = await pool.getConnection()
 
-  try {
-    // Verificar token y rol antes de procesar la solicitud
-    verifyToken(req, res, () => {
-      checkRole(['empleado', 'administrador'])(req, res, async () => {
+      try {
         // Validar los datos de entrada
         const validatedData = validateFileUpload({
           ...req.body,
@@ -98,10 +98,11 @@ export const uploadFileGeneral = async (req, res, next) => {
         )
 
         // Insertar la imagen asociada al documento
+        const imagenesSubidas = []
         if (req.files && req.files.length > 0) {
           // Verifica si se subieron archivos
           for (const file of req.files) {
-            await connection.query(
+            const [imageResult] = await connection.query(
               'INSERT INTO imagenes (documento_id, url, tipo_imagen) VALUES (?, ?, ?)',
               [
                 documentoId,
@@ -109,34 +110,49 @@ export const uploadFileGeneral = async (req, res, next) => {
                 path.extname(file.originalname).slice(1)
               ]
             )
+            imagenesSubidas.push({
+              id: imageResult.insertId,
+              nombre: file.filename,
+              tipo: file.mimetype
+            })
           }
         } else {
           console.warn('No se subieron imágenes para este documento.')
-          // Puedes decidir si lanzar un error o simplemente continuar sin imágenes.
         }
         await connection.commit()
-        res.status(200).json({
+
+        // Enviar respuesta de éxito
+        return res.status(200).json({
           success: true,
           message: 'Documento subido exitosamente',
-          documentoId
+          data: {
+            documentoId,
+            expedienteId,
+            legajoId,
+            personaId,
+            imagenes: imagenesSubidas
+          }
         })
-      })
-    })
-  } catch (error) {
-    await connection.rollback()
+      } catch (error) {
+        await connection.rollback()
 
-    if (error.name === 'ZodError') {
-      return res.status(400).json({
-        message: 'Error de validación',
-        errors: error.errors
-      })
-    }
+        if (error.name === 'ZodError') {
+          return res.status(400).json({
+            success: false,
+            message: 'Error de validación',
+            errors: error.errors
+          })
+        }
 
-    console.error('Error al guardar en la base de datos:', error)
-    res.status(500).json({
-      message: 'Error al guardar el documento en la base de datos'
+        console.error('Error al guardar en la base de datos:', error)
+        return res.status(500).json({
+          success: false,
+          message: 'Error al guardar el documento en la base de datos',
+          error: error.message
+        })
+      } finally {
+        connection.release()
+      }
     })
-  } finally {
-    connection.release()
-  }
+  })
 }
