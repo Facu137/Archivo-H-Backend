@@ -1,10 +1,10 @@
 .env
 
 # Ignorar archivos de log  
-*.log  
+*.log
 
 # Ignorar la carpeta de dependencias de Node.js  
-node_modules/  
+node_modules/
 
 # Ignorar archivos de configuración de IDE  
-.vscode/  
+.vscode/
