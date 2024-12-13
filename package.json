@@ -1,21 +1,40 @@
 {
   "name": "archivo-h-backend",
   "version": "1.0.0",
-  "description": "",
+  "description": "Backend de Archivo Historico que implementa un sistema de gestión de archivos y cuenta con un sistema de autenticación.",
+  "author": "Facundo Maldonado y Nicolás Rivero",
+  "license": "MIT",
   "main": "src/app.js",
   "type": "module",
   "scripts": {
-    "dev": "node --watch src/app.js"
+    "dev": "node --watch src/app.js",
+    "docs": "jsdoc -c jsdoc.json",
+    "lint": "eslint src --ext .js --fix"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",
     "body-parser": "^1.20.2",
+    "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
+    "fs": "^0.0.1-security",
     "jsonwebtoken": "^9.0.2",
     "multer": "^1.4.5-lts.1",
     "mysql2": "^3.10.2",
-    "nodemailer": "^6.9.14"
+    "nodemailer": "^6.9.14",
+    "sharp": "^0.33.5",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "jsdoc": "^4.0.3",
+    "prettier": "^3.3.3",
+    "standard": "^17.1.0"
+  },
+  "eslintConfig": {
+    "extends": "standard"
   }
 }

@@ -1,21 +1,28 @@
-import db from "../config/db.js";
+// src/models/User.js
+import create from './user/create.js'
+import findByEmail from './user/findByEmail.js'
+import findById from './user/findById.js'
+import updateRefreshToken from './user/updateRefreshToken.js'
+import findByRefreshToken from './user/findByRefreshToken.js'
+import removeRefreshToken from './user/removeRefreshToken.js'
+import update from './user/update.js'
+import findAdminById from './user/findAdminById.js'
+import findEmployeeById from './user/findEmployeeById.js'
+import deleteUser from './user/deleteUser.js'
+import promoteEmployeeToAdmin from './user/promoteEmployeeToAdmin.js'
 
 const User = {
-  create: (user, callback) => {
-    const query =
-      "INSERT INTO usuario (email, password, nombre, apellido, rol) VALUES (?, ?, ?, ?, ?)";
-    // Establecer el rol como 'user' automáticamente
-    const rol = "user";
-    db.query(
-      query,
-      [user.email, user.password, user.nombre, user.apellido, rol],
-      callback
-    );
-  },
-  findByEmail: (email, callback) => {
-    const query = "SELECT * FROM usuario WHERE email = ?";
-    db.query(query, [email], callback);
-  },
-};
+  create,
+  findByEmail,
+  findById,
+  updateRefreshToken,
+  findByRefreshToken,
+  removeRefreshToken,
+  update,
+  findAdminById,
+  findEmployeeById,
+  deleteUser,
+  promoteEmployeeToAdmin
+}
 
-export default User;
+export default User

@@ -1,30 +1,50 @@
-import express from "express";
-import cors from "cors";
-import path from "path";
+// src/app.js
+import express from 'express'
+import cors from 'cors'
+import path from 'path'
+import { config } from 'dotenv'
+import cookieParser from 'cookie-parser'
+import routes from './routes/index.js'
+import authRoutes from './routes/authRoutes.js'
+import adminRoutes from './routes/adminRoutes.js'
 
-import { config } from "dotenv";
-import authRoutes from "./routes/authRoutes.js";
-import fileRoutes from "./routes/fileRoutes.js";
+config() // Cargar variables de entorno
 
-
-const app = express();
-const port = process.env.PORT || 3000;
-
-// Cargar variables de entorno y base de datos
-config();
+const app = express()
+const port = process.env.PORT || 3000
 
 // Middlewares
-app.use(cors()); // para aceptar peticiones de otros dominios
-app.use(express.json()); // para analizar el body de las peticiones
+app.use(
+  cors({
+    origin: 'http://localhost:5173', // Ajusta esto a la URL de tu frontend
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+  })
+)
+app.use(express.json())
+app.use(cookieParser())
 
-// Rutas
-app.use("/auth", authRoutes); // ruta de autenticación
+// Servir archivos estáticos
+app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')))
 
-app.use("/api", fileRoutes); // ruta para subir archivos
-app.use("/uploads", express.static(path.join(process.cwd(), "uploads"))); // ruta para subir archivos
+// Rutas de autenticación (sin prefijo /api)
+app.use('/auth', authRoutes)
 
+// Rutas de admin (sin prefijo /api)
+app.use('/admin', adminRoutes)
+
+// Resto de rutas con prefijo /api
+app.use('/api', routes)
+
+// Ruta principal
+app.get('/', (req, res) => {
+  res.send(
+    '<body style="background-color: black; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0;"><h1>Servidor Archivo Historico funcionando... </h1>'
+  )
+})
 
 // Iniciar servidor
 app.listen(port, () => {
-  console.log(`Servidor corriendo en http://localhost:${port}`);
-});
+  console.log(`Servidor corriendo en http://localhost:${port}`)
+})

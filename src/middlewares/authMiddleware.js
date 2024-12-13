@@ -1,21 +1,13 @@
-import jwt from "jsonwebtoken";
-const { verify } = jwt;
+// src\middlewares\authMiddleware.js
+import verifyToken from './authMiddleware/verifyToken.js'
+import checkRole from './authMiddleware/checkRole.js'
+import checkPermission from './authMiddleware/checkPermission.js'
 
-const verifyToken = (req, res, next) => {
-  const token = req.headers["authorization"];
+const authMiddleware = {
+  verifyToken,
+  checkRole,
+  checkPermission
+}
 
-  if (!token) {
-    return res.status(403).json({ message: "Token no proporcionado" });
-  }
-
-  verify(token, process.env.JWT_SECRET, (err, decoded) => {
-    if (err) {
-      return res.status(401).json({ message: "Token no válido" });
-    }
-
-    req.user = decoded;
-    next();
-  });
-};
-
-export default verifyToken;
+export { verifyToken, checkRole, checkPermission }
+export default authMiddleware

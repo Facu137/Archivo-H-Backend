@@ -1,10 +1,42 @@
-import { Router } from "express";
-import { uploadFile, getFiles } from "../controllers/fileController.js";
-import upload from "../middlewares/uploadMiddleware.js";
+// src/routes/fileRoutes.js
+import express from 'express'
+import {
+  uploadFileGeneral,
+  uploadFileMensura,
+  uploadFileNotarial
+} from '../controllers/fileController/index.js'
+import upload from '../middlewares/uploadMiddleware.js'
+import { verifyToken, checkRole } from '../middlewares/authMiddleware.js' // Importar los middlewares
 
-const router = Router();
+const router = express.Router()
 
-router.post("/upload", upload.single("archivo"), uploadFile);
-router.get("/files", getFiles);
+router.use(express.urlencoded({ extended: true })) // Agrega este middleware
 
-export default router;
+// Rutas para subir archivos (con middleware de autenticación)
+router.post(
+  '/upload/general',
+  verifyToken, // Verificar el token
+  checkRole(['empleado', 'administrador']), // Verificar el rol
+  upload.array('archivo'),
+  uploadFileGeneral
+)
+router.post(
+  '/upload/notarial',
+  verifyToken, // Verificar el token
+  checkRole(['empleado', 'administrador']), // Verificar el rol
+  upload.array('archivo'),
+  uploadFileGeneral,
+  uploadFileNotarial
+)
+router.post(
+  '/upload/mensura',
+  verifyToken, // Verificar el token
+  checkRole(['empleado', 'administrador']), // Verificar el rol
+  upload.array('archivo'),
+  uploadFileGeneral,
+  uploadFileMensura
+)
+
+// ... otras rutas
+
+export default router
