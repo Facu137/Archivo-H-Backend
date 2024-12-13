@@ -7,7 +7,6 @@ import {
 } from '../controllers/fileController/index.js'
 import upload from '../middlewares/uploadMiddleware.js'
 import { verifyToken, checkRole } from '../middlewares/authMiddleware.js' // Importar los middlewares
-import { convertToAvif } from '../middlewares/imageConverter.js' // Added import for convertToAvif middleware
 
 const router = express.Router()
 
@@ -19,7 +18,6 @@ router.post(
   verifyToken, // Verificar el token
   checkRole(['empleado', 'administrador']), // Verificar el rol
   upload.array('archivo'),
-  convertToAvif, // Integrated convertToAvif middleware
   uploadFileGeneral
 )
 router.post(
@@ -27,7 +25,6 @@ router.post(
   verifyToken, // Verificar el token
   checkRole(['empleado', 'administrador']), // Verificar el rol
   upload.array('archivo'),
-  convertToAvif, // Integrated convertToAvif middleware
   uploadFileGeneral,
   uploadFileNotarial
 )
@@ -36,7 +33,6 @@ router.post(
   verifyToken, // Verificar el token
   checkRole(['empleado', 'administrador']), // Verificar el rol
   upload.array('archivo'),
-  convertToAvif, // Integrated convertToAvif middleware
   uploadFileGeneral,
   uploadFileMensura
 )
