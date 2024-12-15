@@ -7,6 +7,7 @@ import cookieParser from 'cookie-parser'
 import routes from './routes/index.js'
 import authRoutes from './routes/authRoutes.js'
 import adminRoutes from './routes/adminRoutes.js'
+import { testConnection } from './config/db.js'
 
 config() // Cargar variables de entorno
 
@@ -44,7 +45,20 @@ app.get('/', (req, res) => {
   )
 })
 
-// Iniciar servidor
-app.listen(port, () => {
-  console.log(`Servidor corriendo en http://localhost:${port}`)
-})
+// Iniciar el servidor
+const startServer = async () => {
+  try {
+    // Verificar la conexión a la base de datos
+    await testConnection()
+
+    app.listen(port, () => {
+      console.log(`🚀 Server running on port ${port}`)
+      console.log(`Frontend URL: ${process.env.FRONTEND_URL}`)
+    })
+  } catch (error) {
+    console.error('Failed to start server:', error)
+    process.exit(1)
+  }
+}
+
+startServer()
