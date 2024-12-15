@@ -39,10 +39,21 @@ app.use('/admin', adminRoutes)
 app.use('/api', routes)
 
 // Ruta principal
-app.get('/', (req, res) => {
-  res.send(
-    '<body style="background-color: black; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0;"><h1>Servidor Archivo Historico funcionando... </h1>'
-  )
+app.get('/', async (req, res) => {
+  let dbStatus = 'Desconectada '
+  try {
+    await testConnection()
+    dbStatus = 'Conectada '
+  } catch (error) {
+    console.error('Error al verificar la base de datos:', error)
+  }
+
+  res.send(`
+    <body style="background-color: black; color: white; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; margin: 0; font-family: Arial, sans-serif;">
+      <h1>Servidor Archivo Histrico funcionando... </h1>
+      <h2>Base de datos: ${dbStatus}</h2>
+    </body>
+  `)
 })
 
 // Iniciar el servidor
@@ -52,7 +63,7 @@ const startServer = async () => {
     await testConnection()
 
     app.listen(port, () => {
-      console.log(`🚀 Server running on port ${port}`)
+      console.log(` Server running on port ${port}`)
       console.log(`Frontend URL: ${process.env.FRONTEND_URL}`)
     })
   } catch (error) {
