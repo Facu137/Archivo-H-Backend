@@ -6,7 +6,11 @@
   "license": "MIT",
   "main": "src/app.js",
   "type": "module",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "scripts": {
+    "start": "node src/app.js",
     "dev": "node --watch src/app.js",
     "docs": "jsdoc -c jsdoc.json",
     "lint": "eslint src --ext .js --fix"
