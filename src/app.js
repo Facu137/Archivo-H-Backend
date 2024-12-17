@@ -17,7 +17,10 @@ const port = process.env.PORT || 3000
 // Middlewares
 app.use(
   cors({
-    origin: 'http://localhost:5173', // Ajusta esto a la URL de tu frontend
+    origin:
+      process.env.NODE_ENV === 'production'
+        ? process.env.VITE_FRONTEND_URL
+        : 'http://localhost:5173',
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
@@ -65,6 +68,7 @@ const startServer = async () => {
     app.listen(port, () => {
       console.log(` Server running on port ${port}`)
       console.log(`Frontend URL: ${process.env.FRONTEND_URL}`)
+      console.log(`Backend URL: ${process.env.BACKEND_URL}`)
     })
   } catch (error) {
     console.error('Failed to start server:', error)
