@@ -1,15 +1,19 @@
 // src/config/db.js
 import { createPool } from 'mysql2/promise'
 import { config } from 'dotenv'
+import path from 'path'
 
-config()
+// Cargar el archivo de entorno correcto según NODE_ENV
+const envFile =
+  process.env.NODE_ENV === 'production' ? '.env.production' : '.env.development'
+config({ path: path.resolve(process.cwd(), envFile) })
 
 const pool = createPool({
-  host: process.env.MYSQLHOST || 'localhost',
-  port: process.env.MYSQLPORT || 3306,
-  user: process.env.MYSQLUSER || 'root',
-  password: process.env.MYSQLPASSWORD || 'root',
-  database: process.env.MYSQL_DATABASE || 'archivotest',
+  host: process.env.MYSQLHOST,
+  port: process.env.MYSQLPORT,
+  user: process.env.MYSQLUSER,
+  password: process.env.MYSQLPASSWORD,
+  database: process.env.MYSQL_DATABASE,
   // otras opciones de configuración
   waitForConnections: true,
   connectionLimit: 100,
