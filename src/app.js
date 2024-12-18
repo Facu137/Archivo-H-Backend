@@ -17,10 +17,21 @@ const port = process.env.PORT || 3000
 // Middlewares
 app.use(
   cors({
-    origin:
-      process.env.NODE_ENV === 'production'
-        ? process.env.VITE_FRONTEND_URL
-        : 'http://localhost:5173',
+    origin: (origin, callback) => {
+      // Permitir solicitudes sin origen (como aplicaciones móviles o solicitudes curl)
+      if (!origin) return callback(null, true)
+
+      const allowedOrigins = [
+        'http://localhost:5173',
+        'https://archivohistoricosde.up.railway.app'
+      ]
+
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true)
+      } else {
+        callback(new Error('No permitido por CORS'))
+      }
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
