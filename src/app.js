@@ -76,10 +76,18 @@ const startServer = async () => {
     // Verificar la conexión a la base de datos
     await testConnection()
 
-    app.listen(port, () => {
-      console.log(` Server running on port ${port}`)
+    // Log de variables importantes
+    console.log('Environment Variables:')
+    console.log('NODE_ENV:', process.env.NODE_ENV)
+    console.log('PORT:', process.env.PORT)
+    console.log('RAILWAY_PORT:', process.env.RAILWAY_PORT)
+
+    app.listen(port, '0.0.0.0', () => {
+      console.log('\n🚀 Server Configuration:')
+      console.log(`Port: ${port}`)
       console.log(`Frontend URL: ${process.env.FRONTEND_URL}`)
       console.log(`Backend URL: ${process.env.BACKEND_URL}`)
+      console.log(`Environment: ${process.env.NODE_ENV}`)
     })
   } catch (error) {
     console.error('Failed to start server:', error)
